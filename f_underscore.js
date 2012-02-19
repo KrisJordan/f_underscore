@@ -1,51 +1,54 @@
-var _ = require('underscore');
+// if(this['require'] !== undefined) {
+// var _ = require('underscore');
+// }
 
-var f_ = function(prop) {
-    return function(obj) {
-        return obj[prop];
-    };
-};
+var f_  = {};
 
+window.f_ = f_;
+
+// ## Utility Functions
+
+// When called with a value, return the value.
 f_.I =
 f_.i = _.identity;
 
-f_.functionize = function(f_val) {
-    if(_.isFunction(f_val)) {
-        return f_val;
-    } else {
-        return function() { return f_val; }
-    }
+var _wire = function(target, exprs, partialFn) {
+    _.each(exprs, function(exprAliasesList, name) {
+        var exprFn  = _.first(exprAliasesList),
+            aliases = _.rest(exprAliasesList);
+        target[name] = f_.partial(partialFn, exprFn);
+        _.each(aliases, f_.setByProperty(target, function() { return target[name]; }));
+    });
 };
 
-// TODO: variable args
-f_.curry = function(fn) {
-    var args = [].slice.apply(arguments);
-    args.shift();
+f_.partial = function(fn) {
+    var args = _.rest(arguments, 1);
     return function() {
         return fn.apply(this, args.concat([].slice.apply(arguments)));
     };
 };
 
-// TODO: variable args
-f_.curryR = function(fn, curried) {
+f_.partialRight =
+f_.partialR = function(fn) {
+    var args = _.rest(arguments, 1);
     return function(called) {
-        return fn(called, curried);
+        return fn.apply(this, [].slice.apply(arguments).concat(args));
     };
 };
 
-f_._ =
 f_.thru =
 f_.thread = function() {
     var args = arguments;
-    return function(val) {
+    return function() {
+        var val = [].slice.apply(arguments);
         for(var i = 0; i < args.length; i++) {
-            val = args[i](val);
+            val = [args[i].apply(this, val)];
         }
-        return val;
+        return val[0];
     };
 };
 
-f_.zipObj = function(keys, props) {
+f_.zipObject = function(keys, props) {
     var pairs = _.zip(keys, props),
         rv = {};
     _.each(pairs, function(pair) {
@@ -54,11 +57,20 @@ f_.zipObj = function(keys, props) {
     return rv;
 };
 
-f_.select =
-f_.project = function(props) {
-    return function(obj) {
-        return f_.zipObj(props, _.map(props, f_.getR(obj)));
-    };
+_.mixin({
+    partial:        f_.partial,
+    partialRight:   f_.partialRight,
+    partialR:       f_.partialRight,
+    thru:           f_.thru,
+    thread:         f_.thread,
+    zipObject:      f_.zipObject
+});
+
+// When called with a function, return the function.
+// When `functionize` is called with a value, return a new function
+// which, when called, will return the value.
+f_.functionize = function(f_v) {
+    return _.isFunction(f_v) ? f_v : function(){ return f_v; };
 };
 
 f_.get = function(prop) {
@@ -67,182 +79,188 @@ f_.get = function(prop) {
     };
 };
 
-f_.getO = function(obj) {
+f_.getByProperty = function(obj) {
     return function(prop) {
         return obj[prop];
     };
 };
 
-f_.set = function(prop, f_val) {
-    var fn = f_.functionize(f_val);
+f_.set = function(prop, f_v) {
+    var fn = f_.functionize(f_v);
     return function(obj) {
         obj[prop] = fn(obj);
         return obj;
     };
 };
 
-f_.setO = function(obj, f_val) {
-    var fn = f_.functionize(f_val);
+f_.setByProperty = function(obj, f_v) {
+    var fn = f_.functionize(f_v);
     return function(prop) {
         obj[prop] = fn(obj);
         return obj;
     };
 };
 
-// Weird - breaks model
-// f_.getSet = function(prop, f_val) {
-//    var fn = f_.functionize(f_val),
-//        get = fn(f_.get(prop));
-//    return function(obj) {
-//        obj[prop] = get(obj);
-//        return obj;
-//    };
-//};
+f_.project = function(props) {
+    return function(obj) {
+        return _.zipObject(props, _.map(props, f_.getByProperty(obj)));
+    };
+};
 
-f_.unaryExpr = function(expr, f_val) {
-    var fn = f_.functionize(f_val);
+// ## Primitive Functions
+var 
+
+// Arithmetic Primitives
+    add         = function(l, r)        { return l + r; },
+    subtract    = function(l, r)        { return l - r; },
+    multiply    = function(l, r)        { return l * r; },
+    divide      = function(l, r)        { return l / r; },
+    modulo      = function(l, r)        { return l % r; },
+
+    increment   = function(l)           { return l + 1; },
+    decrement   = function(l)           { return l - 1; },
+    square      = function(l)           { return l * l; },
+    negate      = function(l)           { return l * -1; },
+
+//  String
+    append      = function(l, r)        { return "" + l + r; }
+
+// Relational
+    greaterThan = function(l, r)        { return l >  r; },
+    atLeast     = function(l, r)        { return l >= r; },
+    lessThan    = function(l, r)        { return l <  r; },
+    atMost      = function(l, r)        { return l <= r; },
+
+    greaterOf   = function(l, r)        { return l > r ? l : r; },
+    lesserOf    = function(l, r)        { return l < r ? l : r; },
+
+//  Equality
+    equality    = _.isEqual,
+    inequality  = function()            { return !equality.apply(this,arguments); },
+
+//  Logical
+    and         = function(l, r)        { return l && r; },
+    neither     = function(l, r)        { return !l && !r; },
+    or          = function(l, r)        { return l || r; },
+    xor         = function(l, r)        { return (l && !r) || (!l && r); },
+    not         = function(l)           { return !l; },
+
+//  Ternary
+    ternary     = function(i, t, e)     { return i ? t : e; }
+    ;
+
+// ## Unary Expressions
+
+var unaryExprs = {
+    increment:  [increment, 'incr'],
+    decrement:  [decrement, 'decr'],
+    square:     [square,    'sqr'],
+    not:        [not],
+    negate:     [negate,    'neg']
+};
+
+f_.unaryExpr = function(expr, f_v) {
+    var fn = f_.functionize(f_v);
     return function(obj) {
         return expr(fn(obj));
     };
 };
 
-f_.not = f_.curry(f_.unaryExpr, function(val) { return !val; });
+_wire(f_, unaryExprs, f_.unaryExpr);
 
-f_.incr = f_.curry(f_.unaryExpr, function(val) { return val + 1; });
+// ## Binary Expressions
+// [ fn, .. aliases .. ]
+var binaryExprs = {
+    add:            [add,           'sum'],
+    subtract:       [subtract,      'sub'],
+    multiply:       [multiply,      'mul', 'prod'],
+    divide:         [divide,        'div'],
+    modulo:         [modulo,        'mod'],
 
-f_.incrBy = function(l_val) {
-    var fn_l = f_.functionize(l_val);
-    return f_.curry(f_.add, fn_l);
+    append:         [append,        'concat'],
+
+    greaterThan:    [greaterThan,   'gt'],
+    atLeast:        [atLeast,       'gte'],
+    lessThan:       [lessThan,      'lt'],
+    atMost:         [atMost,        'lte'],
+    
+    greaterOf:      [greaterOf],
+    lesserOf:       [lesserOf],
+
+    equality:       [equality,      'eq'],
+    inequality:     [inequality,    'neq'],
+
+    and:            [and],
+    neither:        [neither],
+    or:             [or],
+    xor:            [xor]
 };
 
-f_.moduloBy = function(l_val) {
-    var fn_l = f_.function(l_val);
-    return f_.curry(f.modulo, fn_l);
-};
-
-f_.decr = f_.curry(f_.unaryExpr, function(val) { return val - 1; });
-
-f_.square = f_.curry(f_.unaryExpr, function(val) { return val * val; });
-
-f_.binaryExpr = function(expr, f_val_l, f_val_r) {
-    if(f_val_r === undefined) {
-        f_val_r = f_val_l;
-        f_val_l = f_.i;
+f_.binaryExpr = function(expr, f_v_l, f_v_r) {
+    // Support single arg variants where we're partially applying
+    // the right hand value and using identity as left hand value.
+    // Useful for operations on lists of values rather than objects.
+    // i.e. _.map([1,2], f_.add(1)) -> [2,3];
+    if(f_v_r === undefined) {
+        f_v_r = f_v_l;
+        f_v_l = f_.i;
     }
-    var fn_l = f_.functionize(f_val_l),
-        fn_r = f_.functionize(f_val_r);
+    var fn_l = f_.functionize(f_v_l),
+        fn_r = f_.functionize(f_v_r);
     return function(obj) {
         return expr(fn_l(obj), fn_r(obj));
     };
 };
 
-f_.eq = f_.curry(f_.binaryExpr, function(l, r) { return _.isEqual(l, r); });
+_wire(f_, binaryExprs, f_.binaryExpr);
 
-f_.neq = f_.curry(f_.binaryExpr, function(l, r) { return !_.isEqual(l, r); });
+// ## Ternary Expressions
 
-f_.gt = f_.curry(f_.binaryExpr, function(l, r) { return l > r; });
-
-f_.gte = f_.curry(f_.binaryExpr, function(l, r) { return l >= r; });
-
-f_.lt = f_.curry(f_.binaryExpr, function(l, r) { return l < r; });
-
-f_.lte = f_.curry(f_.binaryExpr, function(l, r) { return l <= r; });
-
-f_.append =
-f_.add = f_.curry(f_.binaryExpr, function(l, r) { return l + r; });
-
-f_.sub =
-f_.subtract = f_.curry(f_.binaryExpr, function(l, r) { return l - r; });
-
-f_.mul =
-f_.multiply = f_.curry(f_.binaryExpr, function(l, r) { return l * r; });
-
-f_.div =
-f_.divide = f_.curry(f_.binaryExpr, function(l, r) { return l / r; });
-
-f_.mod =
-f_.modulo = f_.curry(f_.binaryExpr, function(l, r) { return l % r; });
-
-f_.and = f_.curry(f_.binaryExpr, function(l, r) { return l && r; });
-
-f_.or = f_.curry(f_.binaryExpr, function(l, r) { return l || r; });
-
-f_.tertiaryExpr = function(expr, f_val_1, f_val_2, f_val_3) {
-    var fn_1 = f_val_1,
-        fn_2 = f_val_2,
-        fn_3 = f_val_3;
+f_.ternaryExpr = function(expr, f_v_1, f_v_2, f_v_3) {
+    var fn_1 = f_.functionize(f_v_1),
+        fn_2 = f_.functionize(f_v_2),
+        fn_3 = f_.functionize(f_v_3);
     return function(obj) {
         return expr(fn_1(obj), fn_2(obj), fn_3(obj));
     };
 };
 
-f_.ifThenElse = f_.curry(f_.tertiaryExpr, function(_1, _2, _3) {
-    return _1 ? _2 : _3;
-});
+var ternaryExprs = {
+    ternary:    [ternary, 'ifThenElse']
+};
 
-f_.reduceExpr = function(expr, f_val) {
-    var fn = f_.functionize(f_val);
+_wire(f_, ternaryExprs, f_.ternaryExpr);
+
+// ## Reducers
+
+f_.reduceExpr = function(expr, f_v) {
+    var fn;
+    if(f_v === undefined) {
+        fn = f_.i;
+    } else {
+        fn = f_.functionize(f_v);
+    }
     return function(memo, obj) {
         return expr(memo, fn(obj));
     };
 };
-f_.sum = f_.curry(f_.reduceExpr, function(l, r) { return l + r; });
 
-f_.prod =
-f_.product = f_.curry(f_.reduceExpr, function(l, r) { return l * r; });
-f_.count = f_.curry(f_.reduceExpr, function(l, r) { return l + 1; });
+var reducers = {
+    sum:        [add],
+    product:    [multiply],
+    count:      [increment],
+    min:        [lesserOf],
+    max:        [greaterOf]
+};
+_wire(f_, reducers, f_.reduceExpr);
 
 f_.avg = 
-f_.average = function(f_val) {
+f_.average = function(f_v) {
     var count = 0;
     var expr = function(l, r) {
         var numerator   = (l * count) + r,
             denominator = ++count;
         return numerator / denominator;
     };
-    return f_.reduceExpr(expr, f_val);
+    return f_.reduceExpr(expr, f_v);
 };
-
-f_.min = function(f_val) {
-    var min = false;
-    var expr = function(l, r) {
-        return min = l < r ? l : r;
-    };
-    return f_.reduceExpr(expr, f_val);
-};
-
-f_.max = function(f_val) {
-    var max = false;
-    var expr = function(l, r) {
-        return max = l > r ? l : r;
-    };
-    return f_.reduceExpr(expr, f_val);
-};
-
-var test = [ { a:4, b:2, c:3 }, { a: 1, b: 1, c: 2 }, { a: 2, b: 2, c: 2 } ];
-out = _.map(test, f_.project(['b','c']));
-out = _.map(test, f_.get('b'));
-out = _.reduce(test, function(memo, obj) { return memo + obj['a']; }, 0);
-out = _.reduce(test, f_.average(f_.add(f_('a'),f_('b'))), 0);
-out = _.reduce(test, f_.min(f_('a')));
-out = _.reduce(test, f_.max(f_('a')), 0);
-// out = _.map(test, f_._(
-//                     f_.getSet('a', f_.incrBy(5)),
-//                     f_.getSet('b', f_.curry(f_.add, 4))
-//                   )
-//            );
-// out = _.map(test, f_.getSet('a', f_.incr));
-// out = _.map(test, f_.getSet('a', f_.incr));
-
-var evens = _.map([1, 2, 3, 4, 5, 6], f_.add('2'));
-var evens = _.map([1, 2, 3, 4, 5, 6], function(num) { return num + 2; });
-
-var divBy2 = f_.eq(0,f_.mod('2'));
-var divBy3 = f_.eq(0,f_.mod('3'));
-var evens = _.filter([1, 2, 3, 4, 5, 6], f_.or(divBy2, divBy3));
-var evens = _.filter([1, 2, 3, 4, 5, 6], f_.or(f_.eq(0, f_.mod('2')), f_.eq(0, f_.mod('3'))));
-var evens = _.filter([1, 2, 3, 4, 5, 6], function(num) { return num % 2 === 0 || num % 3 === 0; });
-
-var squareOdds = _.map([1, 2, 3, 4, 5, 6], f_.ifThenElse(f_.mod('2'), f_.mul(f_.i), f_.i));
-
-console.log(squareOdds);
