@@ -1,8 +1,8 @@
-// f_underscore.js 0.0.1
-// (c) 2012 Kris Jordan
-// f_underscore is freely distributable under the MIT license.
-// For all details and documentation:
-// http://krisjordan.com/f_underscore
+//      f_underscore.js 0.0.1
+//      (c) 2012 Kris Jordan
+//      `f_underscore` is freely distributable under the MIT license.
+//      For all details and documentation:
+//      http://krisjordan.com/f_underscore
 
 (function() {
 
@@ -28,8 +28,20 @@
     // Current version.
     f_.VERSION = '0.0.1';
 
-    // Function Functions
-    // ---------------------------------
+    // Shorthand for the identity function.
+    f_.I =
+    f_.i = _.identity;
+
+    // Given two arrays of same length, one with strings/keys, the other with values, 
+    // return an object comprised of the keys and values.
+    f_.zipObject = function(keys, props) {
+        var pairs = _.zip(keys,props),
+            result = {};
+        _.each(pairs, function(pair) {
+            result[pair[0]] = pair[1];
+        });
+        return result;
+    };
 
     // Given a function `f`, fill in arguments `Af` without calling `f`. Returns a new
     // function `p`. When `p` is called with argumens `Ap`, function `f` is called with
@@ -47,7 +59,7 @@
 
     // Given a list of functions, return a new function that, when invoked, will
     // call each function in the list in succession passing the return value of each
-    // as an argument to the next.
+    // as an argument to the next. The reverse call order of `_.compose`.
     f_.thread = function() {
         var args = arguments;
         return function() {
@@ -59,30 +71,15 @@
         };
     };
 
-    // Given two arrays of same length, one with strings/keys, the other with values, 
-    // return an object comprised of the keys and values.
-    f_.zipObject = function(keys, props) {
-        var pairs = _.zip(keys,props),
-            result = {};
-        _.each(pairs, function(pair) {
-            result[pair[0]] = pair[1];
-        });
-        return result;
-    };
-
-    // When called with a value, return the value.
-    f_.I =
-    f_.i = _.identity;
+    // Iterator Function Generators
+    // -------------------
 
     // Turn a non-function value into a function that returns that value.
     f_.functionize = function(f_v) {
         return _.isFunction(f_v) ? f_v : function(){ return f_v; };
     };
 
-    // Iterator Generators
-    // -------------------
-
-    // ### Accessor Iterators
+    // ### Accessors
 
     // Make a function that will return the specified property when invoked
     // with an object.
@@ -129,69 +126,17 @@
         };
     };
 
-    // ### Expression Iterators
+    // ### Expressions
 
-    // Primitive Functions
-    // -------------------
-    var 
-
-    // Arithmetic Primitives
-        add         = function(l, r)        { return l + r; },
-        subtract    = function(l, r)        { return l - r; },
-        multiply    = function(l, r)        { return l * r; },
-        divide      = function(l, r)        { return l / r; },
-        modulo      = function(l, r)        { return l % r; },
-
-        increment   = function(l)           { return l + 1; },
-        decrement   = function(l)           { return l - 1; },
-        square      = function(l)           { return l * l; },
-        negate      = function(l)           { return l * -1; },
-
-    //  String
-        append      = function(l, r)        { return "" + l + r; }
-
-    // Relational
-        greaterThan = function(l, r)        { return l >  r; },
-        atLeast     = function(l, r)        { return l >= r; },
-        lessThan    = function(l, r)        { return l <  r; },
-        atMost      = function(l, r)        { return l <= r; },
-
-        greaterOf   = function(l, r)        { return l > r ? l : r; },
-        lesserOf    = function(l, r)        { return l < r ? l : r; },
-
-    //  Equality
-        equality    = _.isEqual,
-        inequality  = function()            { return !equality.apply(this,arguments); },
-
-    //  Logical
-        and         = function(l, r)        { return l && r; },
-        neither     = function(l, r)        { return !l && !r; },
-        or          = function(l, r)        { return l || r; },
-        xor         = function(l, r)        { return (l && !r) || (!l && r); },
-        not         = function(l)           { return !l; },
-
-    //  Ternary
-        ternary     = function(i, t, e)     { return i ? t : e; }
-        ;
-
-    // ## Unary Expressions
-
+    // Unary Expression Template
     f_.unaryExpr = function(expr, f_v) {
-        var fn = f_.functionize(f_v);
+        var iterator = f_.functionize(f_v);
         return function(obj) {
-            return expr(fn(obj));
+            return expr(iterator(obj));
         };
     };
 
-    f_.incr         = f_.increment    = f_.partial(f_.unaryExpr, increment);
-    f_.decr         = f_.decrement    = f_.partial(f_.unaryExpr, decrement);
-    f_.sqr          = f_.square       = f_.partial(f_.unaryExpr, square);
-    f_.not                            = f_.partial(f_.unaryExpr, not);
-    f_.neg          = f_.negate       = f_.partial(f_.unaryExpr, negate);
-
-    // ## Binary Expressions
-    // [ fn, .. aliases .. ]
-
+    // Binary Expression Template 
     f_.binaryExpr = function(expr, f_v_l, f_v_r) {
         // Support single arg variants where we're partially applying
         // the right hand value and using identity as left hand value.
@@ -201,14 +146,76 @@
             f_v_r = f_v_l;
             f_v_l = f_.i;
         }
-        var fn_l = f_.functionize(f_v_l),
-            fn_r = f_.functionize(f_v_r);
+        var iterator_l = f_.functionize(f_v_l),
+            iterator_r = f_.functionize(f_v_r);
         return function(obj) {
-            return expr(fn_l(obj), fn_r(obj));
+            return expr(iterator_l(obj), iterator_r(obj));
         };
     };
 
-    f_.add          = f_.partial(f_.binaryExpr, add);
+    // Ternary Expression Template 
+    f_.ternaryExpr = function(expr, f_v_1, f_v_2, f_v_3) {
+        var fn_1 = f_.functionize(f_v_1),
+            fn_2 = f_.functionize(f_v_2),
+            fn_3 = f_.functionize(f_v_3);
+        return function(obj) {
+            return expr(fn_1(obj), fn_2(obj), fn_3(obj));
+        };
+    };
+
+    // ### Primitives
+    var 
+
+    // Arithmetic Primitives
+    add         = function(l, r)        { return l + r; },
+    subtract    = function(l, r)        { return l - r; },
+    multiply    = function(l, r)        { return l * r; },
+    divide      = function(l, r)        { return l / r; },
+    modulo      = function(l, r)        { return l % r; },
+
+    increment   = function(l)           { return l + 1; },
+    decrement   = function(l)           { return l - 1; },
+    square      = function(l)           { return l * l; },
+    negate      = function(l)           { return l * -1; },
+
+    //  String
+    append      = function(l, r)        { return "" + l + r; }
+
+    // Relational
+    greaterThan = function(l, r)        { return l >  r; },
+    atLeast     = function(l, r)        { return l >= r; },
+    lessThan    = function(l, r)        { return l <  r; },
+    atMost      = function(l, r)        { return l <= r; },
+
+    greaterOf   = function(l, r)        { return l > r ? l : r; },
+    lesserOf    = function(l, r)        { return l < r ? l : r; },
+
+    //  Equality
+    equality    = _.isEqual,
+    inequality  = function()            { return !equality.apply(this,arguments); },
+
+    //  Logical
+    and         = function(l, r)        { return l && r; },
+    neither     = function(l, r)        { return !l && !r; },
+    or          = function(l, r)        { return l || r; },
+    xor         = function(l, r)        { return (l && !r) || (!l && r); },
+    not         = function(l)           { return !l; },
+
+    //  Ternary
+    ternary     = function(i, t, e)     { return i ? t : e; }
+    ;
+
+    // ### Expression Iterators
+
+    // Unary
+    f_.incr         = f_.increment    = f_.partial(f_.unaryExpr, increment);
+    f_.decr         = f_.decrement    = f_.partial(f_.unaryExpr, decrement);
+    f_.sqr          = f_.square       = f_.partial(f_.unaryExpr, square);
+    f_.not                            = f_.partial(f_.unaryExpr, not);
+    f_.neg          = f_.negate       = f_.partial(f_.unaryExpr, negate);
+
+    // Binary
+    f_.add                              = f_.partial(f_.binaryExpr, add);
     f_.sub          = f_.subtract       = f_.partial(f_.binaryExpr, subtract);
     f_.mul          = f_.multiply       = f_.partial(f_.binaryExpr, multiply);
     f_.div          = f_.divide         = f_.partial(f_.binaryExpr, divide);
@@ -232,21 +239,10 @@
     f_.or                               = f_.partial(f_.binaryExpr, or);
     f_.xor                              = f_.partial(f_.binaryExpr, xor);
 
-
-    // ## Ternary Expressions
-
-    f_.ternaryExpr = function(expr, f_v_1, f_v_2, f_v_3) {
-        var fn_1 = f_.functionize(f_v_1),
-            fn_2 = f_.functionize(f_v_2),
-            fn_3 = f_.functionize(f_v_3);
-        return function(obj) {
-            return expr(fn_1(obj), fn_2(obj), fn_3(obj));
-        };
-    };
-
+    // Ternary
     f_.ternary = f_.partial(f_.ternaryExpr, ternary);
 
-    // ## Reducers
+    // ### Reducer Iterators
 
     f_.reduceExpr = function(expr, f_v) {
         var fn;
@@ -268,7 +264,7 @@
 
     f_.avg = 
     f_.average = function(f_v) {
-        var count = 0;
+        var count = 1;
         var expr = function(l, r) {
             var numerator   = (l * count) + r,
                 denominator = ++count;

@@ -305,9 +305,10 @@ $(document).ready(function() {
 
     test("f_.average", function() {
         var avg = f_.average(f_.getByProperty(o));
-        equals(avg(0, 'a'),     1);
-        equals(avg(1, 'b'),     1.5);
-        equals(avg(1.5, 'b'),   5/3);
+        equals(avg(0, 'a'),     0.5);
+        equals(avg(1, 'b'),     4/3);
+        equals(avg(1.5, 'b'),   1.625);
+        equals(_.reduce([5,7,1,3,9,2], f_.avg()), 4.5);
     });
 
     test("f_.min", function() {
@@ -325,7 +326,7 @@ $(document).ready(function() {
         equals(max(0, 'a'), 3);
         equals(max(3, 'b'), 3);
         equals(max(3, 'c'), 6);
-
+        equals(_.reduce([5,7,1,3,9,2], f_.max()), 9);
     });
 
 });
