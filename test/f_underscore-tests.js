@@ -6,12 +6,6 @@ $(document).ready(function() {
         equals(f_.i(1), 1);
     });
 
-    test("f_.functionize values", function() {
-        equals(f_.functionize(1)(), 1);
-        equals(f_.functionize(1)(2), 1);
-        equals(f_.functionize("s")(), "s");
-        equals(f_.functionize(true)(), true);
-    });
     
     var f1 = function(){ return 1; },
         i = function(a) { return a; },
@@ -24,38 +18,34 @@ $(document).ready(function() {
         keys = [ 'a', 'b' ],
         vals = [ 1, 2];
 
+    test("f_.partial", function() {
+        equals(f_.partial(i, 1)(), 1);
+        equals(f_.partial(add, 1)(2), 3);
+        equals(f_.partial(add, 1, 2)(), 3);
+    });
+    
+    test("f_.thread", function() {
+        equals(f_.thread(f1)(), 1);
+        equals(f_.thread(f1, i)(), 1);
+        equals(f_.thread(add)(1, 1), 2);
+        equals(f_.thread(add, incr)(1, 1), 3);
+    });
+
+    test("f_.zipObject", function() {
+        deepEqual(f_.zipObject(keys, vals), o);
+        deepEqual(f_.zipObject([], []), {}); 
+    });
+
+    test("f_.functionize values", function() {
+        equals(f_.functionize(1)(), 1);
+        equals(f_.functionize(1)(2), 1);
+        equals(f_.functionize("s")(), "s");
+        equals(f_.functionize(true)(), true);
+    });
+
     test("f_.functionize functions", function() {
         equals(f_.functionize(f1)(), 1);
         equals(f_.functionize(i)(1), 1);
-    });
-
-    test("_.partial", function() {
-        equals(_.partial(i, 1)(), 1);
-        equals(_.partial(add, 1)(2), 3);
-        equals(_.partial(add, 1, 2)(), 3);
-    });
-    
-    test("_.partialRight", function() {
-        equals(_.partialRight(i, 1)(), 1);
-
-        equals(_.partialRight(append, "1")("2"), "21");
-        equals(_.partialRight(append, "1", "2")(), "12");
-
-        var f3 = function(a, b, c) { return a - (b + c); };
-        equals(_.partialRight(f3, 2, 1)(3), 0);
-        equals(_.partialRight(f3, -1, 1)(5), 5);
-    });
-
-    test("_.thread", function() {
-        equals( _.thread(f1)(), 1);
-        equals( _.thread(f1, i)(), 1);
-        equals(_.thread(add)(1, 1), 2);
-        equals(_.thread(add, incr)(1, 1), 3);
-    });
-
-    test("_.zipObject", function() {
-        deepEqual(_.zipObject(keys, vals), o);
-        deepEqual(_.zipObject([], []), {}); 
     });
 
     test("f_.get", function() {
