@@ -32,6 +32,12 @@
     f_.I =
     f_.i = _.identity;
 
+    // More aliases.
+    var ArrayProto  = Array.prototype,
+        ObjProto    = Object.prototype,
+        StringProto = String.prototype,
+        FuncProto   = Function.prototype;
+
     // Given two arrays of same length, one with strings/keys, the other with values, 
     // return an object comprised of the keys and values.
     f_.zipObject = function(keys, props) {
@@ -40,6 +46,28 @@
         _.each(pairs, function(pair) {
             result[pair[0]] = pair[1];
         });
+        return result;
+    };
+
+    // Given two arrays return an array of all permutations of one item selected
+    // from each array.
+    // TODO: test, add multiple arg support
+    f_.permute = function(l, r) {
+	    if(l.length === 0 && r.length > 0) {
+	        var temp = r;
+            r = l;
+            l = temp;
+        }
+        var result = [];
+        for(var i = 0; i < l.length; i++) {
+            if(r.length > 0) {
+                for(var j = 0; j < r.length; j++) {
+                    result.push([l[i], r[j]]);
+                }
+            } else {
+                result.push([l[i]]);
+            }
+        }
         return result;
     };
 
@@ -71,6 +99,31 @@
         };
     };
 
+    // TODO: Document, test, and decide whether to keep.
+    f_.apply = function(fn) {
+        return function(obj) {
+            return fn.apply(obj, arguments);
+        };
+    };
+
+    f_.applyFunction = function(obj) {
+        return function(fn) {
+            return fn.apply(obj, arguments);
+        };
+    };
+
+    f_.call = function(fn) {
+        return function(obj) {
+            return fn(obj);
+        };
+    };
+
+    f_.callFunction = function(obj) {
+        return function(fn) {
+            return fn(obj);
+        };
+    };
+
     // Iterator Function Generators
     // -------------------
 
@@ -86,6 +139,14 @@
     f_.get = function(prop) {
         return function(obj) {
             return obj[prop];
+        };
+    };
+
+    // Get a property, use it to call the iterator
+    f_.getSet = function(prop, iterator) {
+        return function(obj) {
+            obj[prop] = iterator(obj[prop]);
+            return obj;
         };
     };
 
@@ -125,6 +186,67 @@
                                 _.map(properties, f_.getByProperty(obj)));
         };
     };
+
+    // Make a function that will call `fn` bound to the object the iterator
+    // is invoked with.
+    f_.bindFunction = function(fn) {
+        var args = _.map(_.rest(arguments), f_.functionize);
+        return function(item) {
+            return fn.apply(item, _.map(args, f_.callFunction(item)));
+        };
+    };
+
+    // Binary Method 
+    f_.bindMethod = function(method) {
+        var args = _.map(_.rest(arguments), f_.functionize);
+        return function(obj) {
+            var argVals = _.map(args, f_.callFunction(obj));
+            // Support calling method in a binary expression sense
+            if(!obj[method]) {
+                obj     = _.first(argVals);
+                argVals = _.rest(argVals);
+            }
+            return obj[method].apply(obj, argVals);
+        };
+    };
+
+    // ### Methods Iterators
+    var methods = [ 
+                        // Array
+                        'pop',
+                        'push',
+                        'reverse',
+                        'shift',
+                        'sort',
+                        'splice',
+                        'unshift',
+                        'join',
+
+                        // String
+                        'charAt',
+                        'charCodeAt',
+                        'match',
+                        'replace',
+                        'search',
+                        'split',
+                        'substr',
+                        'substring',
+                        'toLowerCase',
+                        'toUpperCase',
+
+                        // Common
+                        'concat',
+                        'indexOf',
+                        'lastIndexOf',
+                        'slice'
+                    ];
+    _.extend(f_, f_.zipObject(
+                    methods,
+                    _.map(methods, function(fn) { 
+                        return f_.partial(f_.bindMethod, fn); 
+                    })
+                 )
+            );
 
     // ### Expressions
 
@@ -179,7 +301,8 @@
     negate      = function(l)           { return l * -1; },
 
     //  String
-    append      = function(l, r)        { return "" + l + r; }
+    append      = function(l, r)        { return (''+l).concat(r); }
+    prepend     = function(l, r)        { return (''+r).concat(l); }
 
     // Relational
     greaterThan = function(l, r)        { return l >  r; },
@@ -208,11 +331,11 @@
     // ### Expression Iterators
 
     // Unary
-    f_.incr         = f_.increment    = f_.partial(f_.unaryExpr, increment);
-    f_.decr         = f_.decrement    = f_.partial(f_.unaryExpr, decrement);
-    f_.sqr          = f_.square       = f_.partial(f_.unaryExpr, square);
-    f_.not                            = f_.partial(f_.unaryExpr, not);
-    f_.neg          = f_.negate       = f_.partial(f_.unaryExpr, negate);
+    f_.incr         = f_.increment      = f_.partial(f_.unaryExpr, increment);
+    f_.decr         = f_.decrement      = f_.partial(f_.unaryExpr, decrement);
+    f_.sqr          = f_.square         = f_.partial(f_.unaryExpr, square);
+    f_.not                              = f_.partial(f_.unaryExpr, not);
+    f_.neg          = f_.negate         = f_.partial(f_.unaryExpr, negate);
 
     // Binary
     f_.add                              = f_.partial(f_.binaryExpr, add);
@@ -221,7 +344,13 @@
     f_.div          = f_.divide         = f_.partial(f_.binaryExpr, divide);
     f_.mod          = f_.modulo         = f_.partial(f_.binaryExpr, modulo);
 
-    f_.concat       = f_.append         = f_.partial(f_.binaryExpr, append);
+    // String
+    f_.append                           = f_.partial(f_.binaryExpr, append);
+    f_.prepend                          = f_.partial(f_.binaryExpr, prepend);
+
+    // Relational
+    f_.eq           = f_.isEqual        = f_.partial(f_.binaryExpr, equality);
+    f_.neq          = f_.isNotEqual     = f_.partial(f_.binaryExpr, inequality);
 
     f_.gt           = f_.greaterThan    = f_.partial(f_.binaryExpr, greaterThan);
     f_.gte          = f_.atLeast        = f_.partial(f_.binaryExpr, atLeast);
@@ -231,16 +360,14 @@
     f_.greaterOf                        = f_.partial(f_.binaryExpr, greaterOf);
     f_.lesserOf                         = f_.partial(f_.binaryExpr, lesserOf);
 
-    f_.eq           = f_.equality       = f_.partial(f_.binaryExpr, equality);
-    f_.neq          = f_.inequality     = f_.partial(f_.binaryExpr, inequality);
-
+    // Logical
     f_.and                              = f_.partial(f_.binaryExpr, and);
     f_.neither                          = f_.partial(f_.binaryExpr, neither);
     f_.or                               = f_.partial(f_.binaryExpr, or);
     f_.xor                              = f_.partial(f_.binaryExpr, xor);
 
     // Ternary
-    f_.ternary = f_.partial(f_.ternaryExpr, ternary);
+    f_.ternary     = f_.ifThenElse     = f_.partial(f_.ternaryExpr, ternary);
 
     // ### Reducer Iterators
 
@@ -262,7 +389,6 @@
     f_.min      = f_.partial(f_.reduceExpr, lesserOf);
     f_.max      = f_.partial(f_.reduceExpr, greaterOf);
 
-    f_.avg = 
     f_.average = function(f_v) {
         var count = 1;
         var expr = function(l, r) {

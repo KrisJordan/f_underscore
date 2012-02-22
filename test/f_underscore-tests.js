@@ -13,10 +13,26 @@ $(document).ready(function() {
         append = function(a, b) { return ""+a +b; },
         incr = function(a) { return a + 1; };
 
-    var o = { a: 1, b: 2 },
-        bools = { t: true, f: false },
-        keys = [ 'a', 'b' ],
-        vals = [ 1, 2];
+    var o       = { a: 1, b: 2 },
+        bools   = { t: true, f: false },
+        keys    = [ 'a', 'b' ],
+        vals    = [ 1, 2];
+
+    test("f_.concat", function(){
+        deepEqual(f_.concat(['foo'])(['bar']), ['bar','foo']);
+        deepEqual(f_.concat('foo')('bar'), 'barfoo');
+        deepEqual(f_.concat('foo')('bar'), 'barfoo');
+        deepEqual(f_.concat('#', f_.get('a'))(o), '#1');
+        deepEqual(f_.concat('', f_.get('a'), '#')(o), '1#');
+        deepEqual(f_.concat([], f_.get('a'), '#')(o), [1, '#']);
+        deepEqual(f_.concat([], f_.i)(o), [o]);
+    });
+
+    test("f_.replace", function(){
+        deepEqual(_.map(['ab','ba'], f_.replace(/b/,'')), ['a','a']);
+        deepEqual(_.map([{a:'ab'},{a:'ba'}], f_.replace(f_.get('a'), /b/,'')), ['a','a']);
+        deepEqual(_.map([{a:'ab'},{a:'ba'}], f_.getSet('a', f_.replace(/b/,''))), [{a:'a'},{a:'a'}]);
+    });
 
     test("f_.partial", function() {
         equals(f_.partial(i, 1)(), 1);
@@ -90,6 +106,11 @@ $(document).ready(function() {
         deepEqual(f_.project(['a','b'])(o), { a: 1, b: 2 });
         deepEqual(f_.project(['a','b','c'])(o), { a: 1, b: 2, c: undefined });
     });
+
+    test("f_.split", function(){
+        deepEqual(f_.split(",")("a,b"), ["a","b"]);
+    });
+
     
     // Unary Tests
 
@@ -134,6 +155,7 @@ $(document).ready(function() {
         equals(f_.add(f_.get('a'),f_.get('b'))(o), 3);
     });
 
+
     test("f_.subtract", function() {
         equals(f_.subtract(1, 1)(), 0);
         equals(f_.subtract(1)(1), 0);
@@ -164,6 +186,12 @@ $(document).ready(function() {
         equals(f_.append('a', 'b')(), 'ab');
         equals(f_.append('a')('b'), 'ba');
         equals(f_.append(f_.get('a'),f_.get('b'))(o), '12');
+    });
+
+    test("f_.prepend", function() {
+        equals(f_.prepend('a', 'b')(), 'ba');
+        equals(f_.prepend('a')('b'), 'ab');
+        equals(f_.prepend(f_.get('a'),f_.get('b'))(o), '21');
     });
 
     // Relational
@@ -210,30 +238,30 @@ $(document).ready(function() {
         equals(f_.atMost(f_.get("a"),f_.get("a"))(o), true);
     });
 
-    test("f_.equality", function() {
-        equals(f_.equality(1, 1)(), true);
-        equals(f_.equality(1, 2)(), false);
-        equals(f_.equality("foo", "foo")(), true);
-        equals(f_.equality("foo", "bar")(), false);
-        equals(f_.equality(o, o)(), true);
-        equals(f_.equality(o, bools)(), false);
-        equals(f_.equality(1)(1), true);
-        equals(f_.equality(1)(2), false);
-        equals(f_.equality(f_.get('a'), 1)(o), true);
-        equals(f_.equality(f_.get('a'), 2)(o), false);
+    test("f_.isEqual", function() {
+        equals(f_.isEqual(1, 1)(), true);
+        equals(f_.isEqual(1, 2)(), false);
+        equals(f_.isEqual("foo", "foo")(), true);
+        equals(f_.isEqual("foo", "bar")(), false);
+        equals(f_.isEqual(o, o)(), true);
+        equals(f_.isEqual(o, bools)(), false);
+        equals(f_.isEqual(1)(1), true);
+        equals(f_.isEqual(1)(2), false);
+        equals(f_.isEqual(f_.get('a'), 1)(o), true);
+        equals(f_.isEqual(f_.get('a'), 2)(o), false);
     });
 
-    test("f_.inequality", function() {
-        equals(f_.inequality(1, 1)(), false);
-        equals(f_.inequality(1, 2)(), true);
-        equals(f_.inequality("foo", "foo")(), false);
-        equals(f_.inequality("foo", "bar")(), true);
-        equals(f_.inequality(o, o)(), false);
-        equals(f_.inequality(o, bools)(), true);
-        equals(f_.inequality(1)(1), false);
-        equals(f_.inequality(1)(2), true);
-        equals(f_.inequality(f_.get('a'), 1)(o), false);
-        equals(f_.inequality(f_.get('a'), 2)(o), true);
+    test("f_.isNotEqual", function() {
+        equals(f_.isNotEqual(1, 1)(), false);
+        equals(f_.isNotEqual(1, 2)(), true);
+        equals(f_.isNotEqual("foo", "foo")(), false);
+        equals(f_.isNotEqual("foo", "bar")(), true);
+        equals(f_.isNotEqual(o, o)(), false);
+        equals(f_.isNotEqual(o, bools)(), true);
+        equals(f_.isNotEqual(1)(1), false);
+        equals(f_.isNotEqual(1)(2), true);
+        equals(f_.isNotEqual(f_.get('a'), 1)(o), false);
+        equals(f_.isNotEqual(f_.get('a'), 2)(o), true);
     });
 
     test("f_.and", function() {
@@ -308,7 +336,7 @@ $(document).ready(function() {
         equals(avg(0, 'a'),     0.5);
         equals(avg(1, 'b'),     4/3);
         equals(avg(1.5, 'b'),   1.625);
-        equals(_.reduce([5,7,1,3,9,2], f_.avg()), 4.5);
+        equals(_.reduce([5,7,1,3,9,2], f_.average()), 4.5);
     });
 
     test("f_.min", function() {

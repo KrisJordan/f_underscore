@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            table { border-collapse: collapsed; margin: 5px;}
+            thead td.header { font-size: 18pt; padding: 0px;  vertical-align: middle; text-align: center;}
+            td.subheader { font-size: 15pt; padding: 10px; vertical-align: middle; border-right: 1px solid gray; width: 75px; text-align: right;}
+            td { vertical-align: top; padding: 2px; margin: 0; padding-left: 10px; }
+            table.functions tr td { width: 90px; }
+            table.functions tr td+td {width: 25px; padding: 2px 0;}
+            a, a:visited { color: black; }
+            body { font-family: Helvetica Neue, Helvetica, Arial; }
+            div#sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: 200px;
+                overflow-y: auto;
+                overflow-x: hidden;
+                border-right: 5px solid gray;
+                background: white;
+                display: block;
+            }
+            div#sidebar ul {
+                font-size: 12px;
+                line-height: 18px;
+                margin: 0 0 0 20px;
+                list-style: none;
+                padding-left: 0;
+                text-indent: 0;
+            }
+            div#sidebar ul a {
+                text-decoration: none;
+            }
+            div#sidebar ul ul {
+                list-style-type: dash;
+            }
+            div#sidebar .title {
+                font-weight: bold;
+                display: block;
+                margin:  10px 0 10px 20px; 
+            }
+            div.container {
+                width: 800px;
+                margin: 40px 0 50px 200px;
+                display: block;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="sidebar">
+            <a class="title" href="#top">f_underscore.js</a>
+            <a class="title" href="#top">Introduction</a>
+            <a class="title" href="#accessors">Accessors</a>
+            <ul>
+                <li> - <a href="#get">get</a></li>
+                <li> - <a href="#getByProperty">getByProperty</a></li>
+                <li> - <a href="#set">set</a></li>
+                <li> - <a href="#setByProperty">setByProperty</a></li>
+                <li> - <a href="#getSet">getSet</a></li>
+                <li> - <a href="#project">project</a></li>
+            </ul>
+            <a class="title" href="#functions">Functions</a>
+            <ul>
+                <li> - <a href="#call">call</a></li>
+                <li> - <a href="#callByFunction">callByFunction</a></li>
+                <li> - <a href="#apply">apply</a></li>
+                <li> - <a href="#applyByFunction">applyByFunction</a></li>
+                <li> - <a href="#bind">bind</a></li>
+                <li> - <a href="#bindMethod">bindMethod</a></li>
+            </ul>
+            <a class="title" href="#reducers">Reducers</a>
+            <ul>
+                <li> - <a href="#sum">sum</a></li>
+                <li> - <a href="#product">product</a></li>
+                <li> - <a href="#count">count</a></li>
+                <li> - <a href="#min">min</a></li>
+                <li> - <a href="#max">max</a></li>
+                <li> - <a href="#average">average</a></li>
+            </ul>
+            <a class="title" href="#utility">Utility</a>
+            <ul>
+                <li> - <a href="#functionize">functionize</a></li>
+                <li> - <a href="#partial">partial</a></li>
+                <li> - <a href="#permute">permute</a></li>
+                <li> - <a href="#thread">thread</a></li>
+                <li> - <a href="#zipObject">zipObject</a></li>
+            </ul>
+            <a class="title" href="#expressions">Expressions</a>
+            <a class="title" href="#binary">Arithmetic</a>
+            <ul>
+                <li> - <a href="#add">add</a></li>
+                <li> - <a href="#subtract">subtract</a></li>
+                <li> - <a href="#multiply">multiply</a></li>
+                <li> - <a href="#divide">divide</a></li>
+                <li> - <a href="#modulo">modulo</a></li>
+            </ul>
+            <a class="title" href="#unary">Unary</a>
+            <ul>
+                <li> - <a href="#increment">increment</a></li>
+                <li> - <a href="#decrement">decrement</a></li>
+                <li> - <a href="#square">square</a></li>
+                <li> - <a href="#negate">negate</a></li>
+            </ul>
+            <a class="title" href="#equality">Equality</a>
+            <ul>
+                <li> - <a href="#isEqual">isEqual</a></li>
+                <li> - <a href="#isNotEqual">isNotEqual</a></li>
+            </ul>
+            <a class="title" href="#relational">Relational</a>
+            <ul>
+                <li> - <a href="#greaterThan">greaterThan</a></li>
+                <li> - <a href="#atLeast">atLeast</a></li>
+                <li> - <a href="#lessThan">lessThan</a></li>
+                <li> - <a href="#atMost">atMost</a></li>
+                <li> - <a href="#lesserOf">lesserOf</a></li>
+                <li> - <a href="#greaterOf">greaterOf</a></li>
+            </ul>
+            <a class="title" href="#string-expr">String</a>
+            <ul>
+                <li> - <a href="#append">append</a></li>
+                <li> - <a href="#prepend">prepend</a></li>
+            </ul>
+            <a class="title" href="#logical">Logical</a>
+            <ul>
+                <li> - <a href="#and">and</a></li>
+                <li> - <a href="#neither">neither</a></li>
+                <li> - <a href="#or">or</a></li>
+                <li> - <a href="#xor">xor</a></li>
+                <li> - <a href="#not">not</a></li>
+            </ul>
+            <a class="title" href="#ternary">Ternary</a>
+            <ul>
+                <li> - <a href="#ternary">ternary</a></li>
+            </ul>
+            <a class="title" href="#methods">Methods</a>
+            <a class="title" href="#string-method">String</a>
+            <ul>
+                <li> - <a href="#charAt">charAt</a></li>
+                <li> - <a href="#charCodeAt">charCodeAt</a></li>
+                <li> - <a href="#concat">concat</a></li>
+                <li> - <a href="#indexOf">indexOf</a></li>
+                <li> - <a href="#lastIndexOf">lastIndexOf</a></li>
+                <li> - <a href="#match">match</a></li>
+                <li> - <a href="#replace">replace</a></li>
+                <li> - <a href="#search">search</a></li>
+                <li> - <a href="#slice">slice</a></li>
+                <li> - <a href="#split">split</a></li>
+                <li> - <a href="#substr">substr</a></li>
+                <li> - <a href="#substring">substring</a></li>
+                <li> - <a href="#toLowerCase">toLowerCase</a></li>
+                <li> - <a href="#toUpperCase">toUpperCase</a></li>
+            </ul>
+            <a class="title" href="#array-method">Array</a>
+            <ul>
+                <li> - <a href="#pop">pop</a></li>
+                <li> - <a href="#push">push</a></li>
+                <li> - <a href="#reverse">reverse</a></li>
+                <li> - <a href="#shift">shift</a></li>
+                <li> - <a href="#sort">sort</a></li>
+                <li> - <a href="#splice">splice</a></li>
+                <li> - <a href="#unshift">unshift</a></li>
+                <li> - <a href="#join">join</a></li>
+                <li> - <a href="#slice">slice</a></li>
+                <li> - <a href="#indexOf">indexOf</a></li>
+                <li> - <a href="#lastIndexOf">lastIndexOf</a></li>
+                <li> - <a href="#concat">concat</a></li>
+            </ul>
+            <a class="title" href="#changelog">Changelog</a>
+        </div>
+        <div class="container">
+        <a name="top"></a>
+        <h1>f_underscore.js</h1>
+        <p>70 some functions.</p>
+        <h2>Table of Contents</h2>
+        <table>
+                <thead>
+                <tr>
+                    <td></td>
+                    <td class="header">Expressions</td>
+                    <td class="header">Methods</td>
+                </tr>
+                </thead>
+                <tr>
+                    <td>
+                        <table class="functions">
+                            <tr><td rowspan="7" class="subheader">Accessors</td></tr>
+                            <tr><td>get</td></tr>
+                            <tr><td>getByProperty</td></tr>
+                            <tr><td>set</td></tr>
+                            <tr><td>setByProperty</td></tr>
+                            <tr><td>getSet</td></tr>
+                            <tr><td>project</td></tr>
+                        </table>
+                        <table class="functions">
+                            <tr><td rowspan="7" class="subheader">Functions</td></tr>
+                            <tr><td>call</td></tr>
+                            <tr><td>callByFunction</td></tr>
+                            <tr><td>apply</td></tr>
+                            <tr><td>applyByFunction</td></tr>
+                            <tr><td>bind</td></tr>
+                            <tr><td>bindMethod</td></tr>
+                        </table>
+                        <table class="functions">
+                            <tr><td rowspan="7" class="subheader">Reducers</td></tr>
+                            <tr><td>sum</td></tr>
+                            <tr><td>product</td></tr>
+                            <tr><td>count</td></tr>
+                            <tr><td>min</td></tr>
+                            <tr><td>max</td></tr>
+                            <tr><td>average</td></tr>
+                        </table>
+                        <table class="functions">
+                            <tr><td rowspan="6" class="subheader">Utility</td></tr>
+                            <tr><td>partial</td></tr>
+                            <tr><td>thread</td></tr>
+                            <tr><td>functionize</td></tr>
+                            <tr><td>zipObject</td></tr>
+                            <tr><td>permute</td></tr>
+                        </table>
+                    </td>
+                    <td>
+                        <table class="functions">
+                            <tr ><td rowspan="6" class="subheader">Arithmetic</td></tr>
+                            <tr><td>add</td>        <td></td></tr>
+                            <tr><td>subtract</td>   <td>sub</td></tr>
+                            <tr><td>multiply</td>   <td>mul</td></tr>
+                            <tr><td>divide</td>     <td>div</td></tr>
+                            <tr><td>modulo</td>     <td>mod</td></tr>
+                        </table>
+                        <table class="functions">
+                                <tr><td rowspan="3" class="subheader">Equality</td></tr>
+                                <tr><td>isEqual</td>    <td>eq</td></tr>
+                                <tr><td>isNotEqual</td> <td>neq</td></tr>
+                        </table>
+                        <table class="functions">
+                            <tr><td rowspan="5" class="subheader">Logical</td></tr>
+                            <tr><td>and</td>            <td></td></tr>
+                            <tr><td>neither</td>        <td></td></tr>
+                            <tr><td>or</td>             <td></td></tr>
+                            <tr><td>xor</td>            <td></td></tr>
+                        </table>
+                        <table class="functions">
+                            <tr><td rowspan="7" class="subheader">Relational</td></tr>
+                            <tr><td>greaterThan</td>    <td>gt</td></tr>
+                            <tr><td>atLeast</td>        <td>gte</td></tr>
+                            <tr><td>lessThan</td>       <td>lt</td></tr>
+                            <tr><td>atMost</td>         <td>lte</td></tr>
+                            <tr><td>greaterOf</td>      <td></td></tr>
+                            <tr><td>lesserOf</td>       <td></td></tr>
+                        </table>
+                        <table class="functions">
+                            <tr><td rowspan="3" class="subheader">String</td></tr>
+                            <tr><td>append</td>         <td></td></tr>
+                            <tr><td>prepend</td>        <td></td></tr>
+                        </table>
+                        <table class="functions">
+                            <tr ><td rowspan="6" class="subheader">Unary</td></tr>
+                            <tr><td>increment</td>  <td>incr</td></tr>
+                            <tr><td>decrement</td>  <td>decr</td></tr>
+                            <tr><td>not</td>        <td></td></tr>
+                            <tr><td>negate</td>     <td>neg</td></tr>
+                            <tr><td>square</td>     <td>sqr</td></tr>
+                        </table>
+                    </td>
+                    <td>
+                        <table class="functions">
+                            <tr><td rowspan="15" class="subheader">Array</td></tr>
+                            <tr><td>concat</td></tr>
+                            <tr><td>indexOf</td></tr>
+                            <tr><td>join</td></tr>
+                            <tr><td>lastIndexOf</td></tr>
+                            <tr><td>pop</td></tr>
+                            <tr><td>push</td></tr> 
+                            <tr><td>reverse</td></tr>     
+                            <tr><td>shift</td></tr>    
+                            <tr><td>slice</td></tr>
+                            <tr><td>sort</td></tr>
+                            <tr><td>splice</td></tr>
+                            <tr><td>unshift</td></tr>
+                        </table>
+                        <table class="functions">
+                            <tr><td rowspan="15" class="subheader">String</td></tr>
+                            <tr><td>charAt</td></tr>
+                            <tr><td>charCodeAt</td></tr> 
+                            <tr><td>concat</td></tr>     
+                            <tr><td>indexOf</td></tr>    
+                            <tr><td>lastIndexOf</td></tr>
+                            <tr><td>match</td></tr>
+                            <tr><td>replace</td></tr>
+                            <tr><td>search</td></tr>
+                            <tr><td>slice</td></tr>
+                            <tr><td>split</td></tr>
+                            <tr><td>substr</td></tr>
+                            <tr><td>substring</td></tr>
+                            <tr><td>toLowerCase</td></tr>
+                            <tr><td>toUpperCase</td></tr>
+                        </table>
+                    </td>
+                </tr>
+        </table>
+    </div>
+    </body>
+</html>
