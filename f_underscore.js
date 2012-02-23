@@ -252,6 +252,9 @@
 
     // Unary Expression Template
     f_.unaryExpr = function(expr, f_v) {
+        if(f_v === undefined) {
+            f_v = f_.i;
+        }
         var iterator = f_.functionize(f_v);
         return function(obj) {
             return expr(iterator(obj));

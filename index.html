@@ -2,20 +2,20 @@
 <html>
     <head>
         <style>
-            table { border-collapse: collapsed; margin: 5px;}
-            thead td.header { font-size: 18pt; padding: 0px;  vertical-align: middle; text-align: center;}
-            td.subheader { font-size: 15pt; padding: 10px; vertical-align: middle; border-right: 1px solid gray; width: 75px; text-align: right;}
-            td { vertical-align: top; padding: 2px; margin: 0; padding-left: 10px; }
-            table.functions tr td { width: 90px; }
-            table.functions tr td+td {width: 25px; padding: 2px 0;}
+
             a, a:visited { color: black; }
             body { font-family: Helvetica Neue, Helvetica, Arial; }
+            code { margin-left: 20px; }
+            .container p { font-size: 14px; line-height: 25px; }
+            .container p a { font-weight: bold; font-size: 16px; }
+            pre { font-size: 12px; font-family: Monaco, Consolas, "Lucida Console", monospace; line-height: 18px; border-left: 5px solid #ccc; padding-left: 20px; margin: 0 0 20px 0; }
+
             div#sidebar {
                 position: fixed;
                 top: 0;
                 left: 0;
                 bottom: 0;
-                width: 200px;
+                width: 150px;
                 overflow-y: auto;
                 overflow-x: hidden;
                 border-right: 5px solid gray;
@@ -42,8 +42,8 @@
                 margin:  10px 0 10px 20px; 
             }
             div.container {
-                width: 800px;
-                margin: 40px 0 50px 200px;
+                width: 600px;
+                margin: 40px 0 50px 175px;
                 display: block;
             }
         </style>
@@ -56,59 +56,17 @@
             <ul>
                 <li> - <a href="#get">get</a></li>
                 <li> - <a href="#getByProperty">getByProperty</a></li>
+                <li> - <a href="#project">project</a></li>
+                <li> - <a href="#getSet">getSet</a></li>
                 <li> - <a href="#set">set</a></li>
                 <li> - <a href="#setByProperty">setByProperty</a></li>
-                <li> - <a href="#getSet">getSet</a></li>
-                <li> - <a href="#project">project</a></li>
-            </ul>
-            <a class="title" href="#functions">Functions</a>
-            <ul>
-                <li> - <a href="#call">call</a></li>
-                <li> - <a href="#callByFunction">callByFunction</a></li>
-                <li> - <a href="#apply">apply</a></li>
-                <li> - <a href="#applyByFunction">applyByFunction</a></li>
-                <li> - <a href="#bind">bind</a></li>
-                <li> - <a href="#bindMethod">bindMethod</a></li>
-            </ul>
-            <a class="title" href="#reducers">Reducers</a>
-            <ul>
-                <li> - <a href="#sum">sum</a></li>
-                <li> - <a href="#product">product</a></li>
-                <li> - <a href="#count">count</a></li>
-                <li> - <a href="#min">min</a></li>
-                <li> - <a href="#max">max</a></li>
-                <li> - <a href="#average">average</a></li>
-            </ul>
-            <a class="title" href="#utility">Utility</a>
-            <ul>
-                <li> - <a href="#functionize">functionize</a></li>
-                <li> - <a href="#partial">partial</a></li>
-                <li> - <a href="#permute">permute</a></li>
-                <li> - <a href="#thread">thread</a></li>
-                <li> - <a href="#zipObject">zipObject</a></li>
-            </ul>
-            <a class="title" href="#expressions">Expressions</a>
-            <a class="title" href="#binary">Arithmetic</a>
-            <ul>
-                <li> - <a href="#add">add</a></li>
-                <li> - <a href="#subtract">subtract</a></li>
-                <li> - <a href="#multiply">multiply</a></li>
-                <li> - <a href="#divide">divide</a></li>
-                <li> - <a href="#modulo">modulo</a></li>
-            </ul>
-            <a class="title" href="#unary">Unary</a>
-            <ul>
-                <li> - <a href="#increment">increment</a></li>
-                <li> - <a href="#decrement">decrement</a></li>
-                <li> - <a href="#square">square</a></li>
-                <li> - <a href="#negate">negate</a></li>
             </ul>
             <a class="title" href="#equality">Equality</a>
             <ul>
                 <li> - <a href="#isEqual">isEqual</a></li>
                 <li> - <a href="#isNotEqual">isNotEqual</a></li>
             </ul>
-            <a class="title" href="#relational">Relational</a>
+            <a class="title" href="#equality">Relational</a>
             <ul>
                 <li> - <a href="#greaterThan">greaterThan</a></li>
                 <li> - <a href="#atLeast">atLeast</a></li>
@@ -117,11 +75,6 @@
                 <li> - <a href="#lesserOf">lesserOf</a></li>
                 <li> - <a href="#greaterOf">greaterOf</a></li>
             </ul>
-            <a class="title" href="#string-expr">String</a>
-            <ul>
-                <li> - <a href="#append">append</a></li>
-                <li> - <a href="#prepend">prepend</a></li>
-            </ul>
             <a class="title" href="#logical">Logical</a>
             <ul>
                 <li> - <a href="#and">and</a></li>
@@ -129,20 +82,30 @@
                 <li> - <a href="#or">or</a></li>
                 <li> - <a href="#xor">xor</a></li>
                 <li> - <a href="#not">not</a></li>
-            </ul>
-            <a class="title" href="#ternary">Ternary</a>
-            <ul>
                 <li> - <a href="#ternary">ternary</a></li>
             </ul>
-            <a class="title" href="#methods">Methods</a>
-            <a class="title" href="#string-method">String</a>
+            <a class="title" href="#binary">Arithmetic</a>
             <ul>
+                <li> - <a href="#add">add</a></li>
+                <li> - <a href="#subtract">subtract</a></li>
+                <li> - <a href="#multiply">multiply</a></li>
+                <li> - <a href="#divide">divide</a></li>
+                <li> - <a href="#modulo">modulo</a></li>
+                <li> - <a href="#increment">increment</a></li>
+                <li> - <a href="#decrement">decrement</a></li>
+                <li> - <a href="#square">square</a></li>
+                <li> - <a href="#negate">negate</a></li>
+            </ul>
+            <a class="title" href="#string-method">String Methods</a>
+            <ul>
+                <li> - <a href="#append">append</a></li>
                 <li> - <a href="#charAt">charAt</a></li>
                 <li> - <a href="#charCodeAt">charCodeAt</a></li>
                 <li> - <a href="#concat">concat</a></li>
                 <li> - <a href="#indexOf">indexOf</a></li>
                 <li> - <a href="#lastIndexOf">lastIndexOf</a></li>
                 <li> - <a href="#match">match</a></li>
+                <li> - <a href="#prepend">prepend</a></li>
                 <li> - <a href="#replace">replace</a></li>
                 <li> - <a href="#search">search</a></li>
                 <li> - <a href="#slice">slice</a></li>
@@ -152,7 +115,7 @@
                 <li> - <a href="#toLowerCase">toLowerCase</a></li>
                 <li> - <a href="#toUpperCase">toUpperCase</a></li>
             </ul>
-            <a class="title" href="#array-method">Array</a>
+            <a class="title" href="#array-method">Array Methods</a>
             <ul>
                 <li> - <a href="#pop">pop</a></li>
                 <li> - <a href="#push">push</a></li>
@@ -167,139 +130,218 @@
                 <li> - <a href="#lastIndexOf">lastIndexOf</a></li>
                 <li> - <a href="#concat">concat</a></li>
             </ul>
+            <a class="title" href="#reducers">Reducers</a>
+            <ul>
+                <li> - <a href="#sum">sum</a></li>
+                <li> - <a href="#product">product</a></li>
+                <li> - <a href="#count">count</a></li>
+                <li> - <a href="#min">min</a></li>
+                <li> - <a href="#max">max</a></li>
+                <li> - <a href="#average">average</a></li>
+            </ul>
+            <a class="title" href="#functions">Functions</a>
+            <ul>
+                <li> - <a href="#call">call</a></li>
+                <li> - <a href="#callByFunction">callByFunction</a></li>
+                <li> - <a href="#apply">apply</a></li>
+                <li> - <a href="#applyByFunction">applyByFunction</a></li>
+                <li> - <a href="#bind">bind</a></li>
+                <li> - <a href="#bindMethod">bindMethod</a></li>
+            </ul>
+            <a class="title" href="#utility">Utility Functions</a>
+            <ul>
+                <li> - <a href="#functionize">functionize</a></li>
+                <li> - <a href="#partial">partial</a></li>
+                <li> - <a href="#permute">permute</a></li>
+                <li> - <a href="#thread">thread</a></li>
+                <li> - <a href="#zipObject">zipObject</a></li>
+            </ul>
             <a class="title" href="#changelog">Changelog</a>
         </div>
         <div class="container">
         <a name="top"></a>
+
         <h1>f_underscore.js</h1>
-        <p>70 some functions.</p>
-        <h2>Table of Contents</h2>
-        <table>
-                <thead>
-                <tr>
-                    <td></td>
-                    <td class="header">Expressions</td>
-                    <td class="header">Methods</td>
-                </tr>
-                </thead>
-                <tr>
-                    <td>
-                        <table class="functions">
-                            <tr><td rowspan="7" class="subheader">Accessors</td></tr>
-                            <tr><td>get</td></tr>
-                            <tr><td>getByProperty</td></tr>
-                            <tr><td>set</td></tr>
-                            <tr><td>setByProperty</td></tr>
-                            <tr><td>getSet</td></tr>
-                            <tr><td>project</td></tr>
-                        </table>
-                        <table class="functions">
-                            <tr><td rowspan="7" class="subheader">Functions</td></tr>
-                            <tr><td>call</td></tr>
-                            <tr><td>callByFunction</td></tr>
-                            <tr><td>apply</td></tr>
-                            <tr><td>applyByFunction</td></tr>
-                            <tr><td>bind</td></tr>
-                            <tr><td>bindMethod</td></tr>
-                        </table>
-                        <table class="functions">
-                            <tr><td rowspan="7" class="subheader">Reducers</td></tr>
-                            <tr><td>sum</td></tr>
-                            <tr><td>product</td></tr>
-                            <tr><td>count</td></tr>
-                            <tr><td>min</td></tr>
-                            <tr><td>max</td></tr>
-                            <tr><td>average</td></tr>
-                        </table>
-                        <table class="functions">
-                            <tr><td rowspan="6" class="subheader">Utility</td></tr>
-                            <tr><td>partial</td></tr>
-                            <tr><td>thread</td></tr>
-                            <tr><td>functionize</td></tr>
-                            <tr><td>zipObject</td></tr>
-                            <tr><td>permute</td></tr>
-                        </table>
-                    </td>
-                    <td>
-                        <table class="functions">
-                            <tr ><td rowspan="6" class="subheader">Arithmetic</td></tr>
-                            <tr><td>add</td>        <td></td></tr>
-                            <tr><td>subtract</td>   <td>sub</td></tr>
-                            <tr><td>multiply</td>   <td>mul</td></tr>
-                            <tr><td>divide</td>     <td>div</td></tr>
-                            <tr><td>modulo</td>     <td>mod</td></tr>
-                        </table>
-                        <table class="functions">
-                                <tr><td rowspan="3" class="subheader">Equality</td></tr>
-                                <tr><td>isEqual</td>    <td>eq</td></tr>
-                                <tr><td>isNotEqual</td> <td>neq</td></tr>
-                        </table>
-                        <table class="functions">
-                            <tr><td rowspan="5" class="subheader">Logical</td></tr>
-                            <tr><td>and</td>            <td></td></tr>
-                            <tr><td>neither</td>        <td></td></tr>
-                            <tr><td>or</td>             <td></td></tr>
-                            <tr><td>xor</td>            <td></td></tr>
-                        </table>
-                        <table class="functions">
-                            <tr><td rowspan="7" class="subheader">Relational</td></tr>
-                            <tr><td>greaterThan</td>    <td>gt</td></tr>
-                            <tr><td>atLeast</td>        <td>gte</td></tr>
-                            <tr><td>lessThan</td>       <td>lt</td></tr>
-                            <tr><td>atMost</td>         <td>lte</td></tr>
-                            <tr><td>greaterOf</td>      <td></td></tr>
-                            <tr><td>lesserOf</td>       <td></td></tr>
-                        </table>
-                        <table class="functions">
-                            <tr><td rowspan="3" class="subheader">String</td></tr>
-                            <tr><td>append</td>         <td></td></tr>
-                            <tr><td>prepend</td>        <td></td></tr>
-                        </table>
-                        <table class="functions">
-                            <tr ><td rowspan="6" class="subheader">Unary</td></tr>
-                            <tr><td>increment</td>  <td>incr</td></tr>
-                            <tr><td>decrement</td>  <td>decr</td></tr>
-                            <tr><td>not</td>        <td></td></tr>
-                            <tr><td>negate</td>     <td>neg</td></tr>
-                            <tr><td>square</td>     <td>sqr</td></tr>
-                        </table>
-                    </td>
-                    <td>
-                        <table class="functions">
-                            <tr><td rowspan="15" class="subheader">Array</td></tr>
-                            <tr><td>concat</td></tr>
-                            <tr><td>indexOf</td></tr>
-                            <tr><td>join</td></tr>
-                            <tr><td>lastIndexOf</td></tr>
-                            <tr><td>pop</td></tr>
-                            <tr><td>push</td></tr> 
-                            <tr><td>reverse</td></tr>     
-                            <tr><td>shift</td></tr>    
-                            <tr><td>slice</td></tr>
-                            <tr><td>sort</td></tr>
-                            <tr><td>splice</td></tr>
-                            <tr><td>unshift</td></tr>
-                        </table>
-                        <table class="functions">
-                            <tr><td rowspan="15" class="subheader">String</td></tr>
-                            <tr><td>charAt</td></tr>
-                            <tr><td>charCodeAt</td></tr> 
-                            <tr><td>concat</td></tr>     
-                            <tr><td>indexOf</td></tr>    
-                            <tr><td>lastIndexOf</td></tr>
-                            <tr><td>match</td></tr>
-                            <tr><td>replace</td></tr>
-                            <tr><td>search</td></tr>
-                            <tr><td>slice</td></tr>
-                            <tr><td>split</td></tr>
-                            <tr><td>substr</td></tr>
-                            <tr><td>substring</td></tr>
-                            <tr><td>toLowerCase</td></tr>
-                            <tr><td>toUpperCase</td></tr>
-                        </table>
-                    </td>
-                </tr>
-        </table>
+
+        <p>70 some iterator function generators to complement underscore.js. It's is the tie clip to go along with <a href="http://underscorejs.org">underscore.js</a>'s tie, and <a href="http://docs.jquery.com">jQuery</a>'s tux.</p>
+        <h2>Download</h2>
+        <h2><a name="top">Introduction</a></h2>
+        <h2><a name="accessors">Accessors</a></h2>
+        
+        <p><a name="get">get</a> <code>f_.get(property) =&gt; iterator(object)</code><br />
+        Returns an <b>iterator</b> function that will return the value of <b>object[property]</b> when called.
+        </p>
+        <pre>
+var getter = f_.get('flavor');
+getter({flavor : 'Vanilla', size : 'Large'});
+=&gt; 'Vanilla'
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+_.map(stooges, f_.get('name'));
+=&gt; ['moe', 'larry', 'curly']
+_.map(stooges, f_.toUpperCase(f_.get('name')));
+=&gt; ['MOE', 'LARRY', 'CURLY']
+</pre>
+
+        <p><a name="getByProperty">getByProperty</a> <code>f_.getByProperty(object) =&gt; iterator(property)</code><br />
+        Returns an <b>iterator</b> function that will return the value of <b>object[property]</b> when called.
+        </p>
+        <pre>
+var iceCream = {flavor : 'Vanilla', size : 'Large', cone : 'Waffle'};
+var getProperty = f_.getByProperty(iceCream);
+getProperty('flavor');
+=&gt; 'Vanilla'
+_.map(['cone', 'flavor'], f_.getByProperty(iceCream));
+=&gt; ['Waffle', 'Vanilla']
+</pre>
+
+            <p><a name="project">project</a> <code>f_.project(propertyNameArray) =&gt; iterator(object)</code><br />
+            Returns an <b>iterator</b> function that will create and return a new object with properties in the <b>propertyNameArray</b> whose values are copied from <b>object</b>.
+            </p>
+        <pre>
+var iceCream = {flavor : 'Vanilla', size : 'Large', cone : 'Waffle'};
+var projectFn = f_.project(['cone', 'flavor']);
+projectFn(iceCream);
+=&gt; {cone : 'Waffle', flavor : 'Vanilla'}
+</pre>
+
+            <p><a name="getSet">getSet</a> <code>f_.getSet(property, fn) =&gt; iterator(object)</code><br />
+            Returns an <b>iterator</b> function that will set <b>object[property]</b> to the return value of <b>fn(object[property])</b> and then returns <b>object</b>.
+        <pre>
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+var incrementAge = f_.getSet('age', function(ageVal) { return ageVal + 1; });
+incrementAge(stooges[0]);
+=&gt; {name : 'moe', age : 41}
+_.map(stooges, f_.getSet('age', f_.incr()));
+=&gt; [{name : 'moe', age : 42}, {name : 'larry', age : 51}, {name : 'curly', age : 61}]
+</pre>
+
+        <p><a name="set">set</a> <code>f_.set(property, fnVal) =&gt; iterator(object)</code><br />
+        Returns an <b>iterator</b> function that will set the value of <b>object[property]</b> to the evaluation of <b>fnVal</b> and then returns <b>object</b>. 
+        </p>
+        <pre>
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+var setter = f_.set('age', 41);
+setter(stooges[0]);
+=&gt; {name : 'moe', age : 41}
+_.map(stooges, f_.set('age', f_.incr(f_.get('age'))));
+=&gt; [{name : 'moe', age : 42}, {name : 'larry', age : 51}, {name : 'curly', age : 61}]
+</pre>
+
+        <p><a name="setByProperty">setByProperty</a> <code>f_.setByProperty(object, fnVal) =&gt; iterator(property)</code><br />
+        Returns an <b>iterator</b> function that will set the value of <b>object[property]</b> to the evaluation of <b>fnVal</b>. The resulting <b>iterator</b> will return <b>object</b>. 
+        </p>
+        <pre>
+var player = {name : 'Kendall Marshall', points : 22, assists : 13, turnovers: 1};
+var reset = f_.setByProperty(player, 0);
+reset('points');
+=&gt; {name : 'Kendall Marshall', points : 0, assists : 13, turnovers: 1}
+_.map(['assists', 'turnovers'], reset);
+=&gt; {name : 'Kendall Marshall', points : 0, assists : 0, turnovers: 0}
+</pre>
+            </p>
+
+        <h2><a name="equality">Equality</a></h2>
+        
+            <p><a name="isEqual">isEqual</a></p>
+            <p><a name="isNotEqual">isNotEqual</a></p>
+        
+        <h2><a name="relational">Relational</a></h2>
+        
+            <p><a name="greaterThan">greaterThan</a></p>
+            <p><a name="atLeast">atLeast</a></p>
+            <p><a name="lessThan">lessThan</a></p>
+            <p><a name="atMost">atMost</a></p>
+            <p><a name="lesserOf">lesserOf</a></p>
+            <p><a name="greaterOf">greaterOf</a></p>
+        
+        <h2><a name="logical">Logical</a></h2>
+        
+            <p><a name="and">and</a></p>
+            <p><a name="neither">neither</a></p>
+            <p><a name="or">or</a></p>
+            <p><a name="xor">xor</a></p>
+            <p><a name="not">not</a></p>
+            <p><a name="ternary">ternary</a></p>
+
+        <h2><a name="binary">Arithmetic</a></h2>
+        
+            <p><a name="add">add</a></p>
+            <p><a name="subtract">subtract</a></p>
+            <p><a name="multiply">multiply</a></p>
+            <p><a name="divide">divide</a></p>
+            <p><a name="modulo">modulo</a></p>
+            <p><a name="increment">increment</a></p>
+            <p><a name="decrement">decrement</a></p>
+            <p><a name="square">square</a></p>
+            <p><a name="negate">negate</a></p>
+        
+        
+        <h2><a name="string-method">String Methods</a></h2>
+        
+            <p><a name="append">append</a></p>
+            <p><a name="charAt">charAt</a></p>
+            <p><a name="charCodeAt">charCodeAt</a></p>
+            <p><a name="concat">concat</a></p>
+            <p><a name="indexOf">indexOf</a></p>
+            <p><a name="lastIndexOf">lastIndexOf</a></p>
+            <p><a name="match">match</a></p>
+            <p><a name="prepend">prepend</a></p>
+            <p><a name="replace">replace</a></p>
+            <p><a name="search">search</a></p>
+            <p><a name="slice">slice</a></p>
+            <p><a name="split">split</a></p>
+            <p><a name="substr">substr</a></p>
+            <p><a name="substring">substring</a></p>
+            <p><a name="toLowerCase">toLowerCase</a></p>
+            <p><a name="toUpperCase">toUpperCase</a></p>
+        
+        <h2><a name="array-method">Array Methods</a></h2>
+        
+            <p><a name="concat">concat</a></p>
+            <p><a name="indexOf">indexOf</a></p>
+            <p><a name="join">join</a></p>
+            <p><a name="lastIndexOf">lastIndexOf</a></p>
+            <p><a name="pop">pop</a></p>
+            <p><a name="push">push</a></p>
+            <p><a name="reverse">reverse</a></p>
+            <p><a name="shift">shift</a></p>
+            <p><a name="slice">slice</a></p>
+            <p><a name="sort">sort</a></p>
+            <p><a name="splice">splice</a></p>
+            <p><a name="unshift">unshift</a></p>
+
+        <h2><a name="reducers">Reducers</a></h2>
+        
+            <p><a name="sum">sum</a></p>
+            <p><a name="product">product</a></p>
+            <p><a name="count">count</a></p>
+            <p><a name="min">min</a></p>
+            <p><a name="max">max</a></p>
+            <p><a name="average">average</a></p>
+
+        <h2><a name="functions">Function Functions</a></h2>
+        
+            <p><a name="call">call</a></p>
+            <p><a name="callByFunction">callByFunction</a></p>
+            <p><a name="apply">apply</a></p>
+            <p><a name="applyByFunction">applyByFunction</a></p>
+            <p><a name="bind">bind</a></p>
+            <p><a name="bindMethod">bindMethod</a></p>
+        
+        
+
+        <h2><a name="utility">Utility Functions</a></h2>
+        
+            <p><a name="functionize">functionize</a></p>
+            <p><a name="partial">partial</a></p>
+            <p><a name="permute">permute</a></p>
+            <p><a name="thread">thread</a></p>
+            <p><a name="zipObject">zipObject</a></p>
+        
+        
+        <h2><a name="changelog">Changelog</a></h2>
     </div>
+    <script type="text/javascript" src="test/vendor/underscore.js"></script>
+    <script type="text/javascript" src="f_underscore.js"></script>
     </body>
 </html>
