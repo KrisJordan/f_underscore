@@ -440,11 +440,8 @@
             stack.push(f_.get(get));
         }
         var chained = function() {
+            this.stack = stack;
             return f_.thread.apply(null, stack).apply(this, arguments);
-        };
-        chained.push = function(arg) {
-            stack.push(arg);
-            return chained;
         };
         _.each(_.functions(f_), function(key) {
             chained[key] = function() {
