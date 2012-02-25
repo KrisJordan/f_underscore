@@ -434,22 +434,31 @@
         return f_.reduceExpr(expr, f_v);
     };
 
+    // Need to clean up names and process here.
+
+    var oneTimeStorage = {};
+    _.each(_.functions(f_), function(key) {
+        oneTimeStorage[key] = function() {
+            this.stack.push(f_[key].apply(this, arguments));
+            return this;
+        };
+    });
+
     var wrapper = function(get) {
         var stack = [];
         if(get !== undefined) {
             stack.push(f_.get(get));
         }
         var chained = function() {
-            this.stack = stack;
-            return f_.thread.apply(null, stack).apply(this, arguments);
+            return f_.thread.apply(null, this.stack).apply(this, arguments);
         };
-        _.each(_.functions(f_), function(key) {
-            chained[key] = function() {
-                stack.push(f_[key].apply(this, arguments));
-                return chained;
-            };
-        });
+        chained.stack = stack;
+        _.extend(chained, oneTimeStorage);
         return chained; 
     };
+
+    // can we create a closure once that has all of the functions setup,
+    // then somehow reuse it.
+
 
 }).call(this);
