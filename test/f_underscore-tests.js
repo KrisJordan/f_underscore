@@ -324,13 +324,6 @@ $(document).ready(function() {
         equals(f_.xor(f_.get('t'), f_.get('t'))(bools), false);
     });
 
-    test("f_.ternary", function() {
-        equals(f_.ternary(false,false,true)(),  true);
-        equals(f_.ternary(true,true,false)(),   true);
-        equals(f_.ternary(f_.get('f'),f_.get('f'),f_.get('t'))(bools),  true);
-        equals(f_.ternary(f_.get('t'),f_.get('t'),f_.get('f'))(bools),  true);
-    });
-
     test("f_.average", function() {
         var avg = f_.average(f_.getByProperty(o));
         equals(avg(0, 'a'),     0.5);

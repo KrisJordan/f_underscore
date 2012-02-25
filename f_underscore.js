@@ -10,7 +10,32 @@
     // --------
 
     // All of `f_`'s functions are plain old functions bundled in an object.
-    var f_  = {};
+    var f_  = function(get) { return wrapper(get); };
+
+    // var wrapper = function() { this._stack = []; };
+    // f_.prototype = wrapper.prototype;
+
+    // // Helper function to continue chaining intermediate results.
+    // var result = function(obj, chain) {
+    //   return chain ? _(obj).chain() : obj;
+    // };
+
+    // // A method to easily add functions to the OOP wrapper.
+    // var addToWrapper = function(name, func) {
+    //   wrapper.prototype[name] = function() {
+    //     var args = slice.call(arguments);
+    //     unshift.call(args, this._wrapped);
+    //     return result(func.apply(_, args), this._chain);
+    //   };
+    // };
+
+    // f_.mixin = function(obj) {
+    //   _.each(_.functions(obj), function(name){
+    //     addToWrapper(name, f_[name] = obj[name]);
+    //   });
+    // };
+
+    // end chain, fluent api support
 
     // Export `f_` to the window/global namespace.
     // Establish the root object, `window` in the browser, or `global` on 
@@ -255,9 +280,14 @@
         if(f_v === undefined) {
             f_v = f_.i;
         }
-        var iterator = f_.functionize(f_v);
-        return function(obj) {
-            return expr(iterator(obj));
+        if(_.isFunction(f_v)) {
+            return function(obj) {
+                return expr(f_v(obj));
+            };
+        } else {
+            return function(obj) {
+                return expr(f_v);
+            };
         };
     };
 
@@ -271,21 +301,28 @@
             f_v_r = f_v_l;
             f_v_l = f_.i;
         }
-        var iterator_l = f_.functionize(f_v_l),
-            iterator_r = f_.functionize(f_v_r);
-        return function(obj) {
-            return expr(iterator_l(obj), iterator_r(obj));
-        };
-    };
 
-    // Ternary Expression Template 
-    f_.ternaryExpr = function(expr, f_v_1, f_v_2, f_v_3) {
-        var fn_1 = f_.functionize(f_v_1),
-            fn_2 = f_.functionize(f_v_2),
-            fn_3 = f_.functionize(f_v_3);
-        return function(obj) {
-            return expr(fn_1(obj), fn_2(obj), fn_3(obj));
-        };
+        if(_.isFunction(f_v_l)) {
+            if(_.isFunction(f_v_r)) {
+                return function(obj) {
+                    return expr(f_v_l(obj), f_v_r(obj));
+                };
+            } else {
+                return function(obj) {
+                    return expr(f_v_l(obj), f_v_r);
+                };
+            }
+        } else {
+            if(_.isFunction(f_v_r)) {
+                return function(obj) {
+                    return expr(f_v_l, f_v_r(obj));
+                };
+            } else {
+                return function() {
+                    return expr(f_v_l, f_v_r);
+                };
+            }
+        }
     };
 
     // ### Primitives
@@ -325,10 +362,8 @@
     neither     = function(l, r)        { return !l && !r; },
     or          = function(l, r)        { return l || r; },
     xor         = function(l, r)        { return (l && !r) || (!l && r); },
-    not         = function(l)           { return !l; },
+    not         = function(l)           { return !l; }
 
-    //  Ternary
-    ternary     = function(i, t, e)     { return i ? t : e; }
     ;
 
     // ### Expression Iterators
@@ -369,9 +404,6 @@
     f_.or                               = f_.partial(f_.binaryExpr, or);
     f_.xor                              = f_.partial(f_.binaryExpr, xor);
 
-    // Ternary
-    f_.ternary     = f_.ifThenElse     = f_.partial(f_.ternaryExpr, ternary);
-
     // ### Reducer Iterators
 
     f_.reduceExpr = function(expr, f_v) {
@@ -400,6 +432,27 @@
             return numerator / denominator;
         };
         return f_.reduceExpr(expr, f_v);
+    };
+
+    var wrapper = function(get) {
+        var stack = [];
+        if(get !== undefined) {
+            stack.push(f_.get(get));
+        }
+        var chained = function() {
+            return f_.thread.apply(null, stack).apply(this, arguments);
+        };
+        chained.push = function(arg) {
+            stack.push(arg);
+            return chained;
+        };
+        _.each(_.functions(f_), function(key) {
+            chained[key] = function() {
+                stack.push(f_[key].apply(this, arguments));
+                return chained;
+            };
+        });
+        return chained; 
     };
 
 }).call(this);
