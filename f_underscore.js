@@ -160,6 +160,8 @@
     // ### Accessors
 
     // Make a function that will return the specified property when invoked
+    //
+    // // Need to clean up names and process here.
     // with an object.
     f_.get = function(prop) {
         return function(obj) {
@@ -450,7 +452,7 @@
             stack.push(f_.get(get));
         }
         var chained = function() {
-            return f_.thread.apply(null, this.stack).apply(this, arguments);
+            return f_.thread.apply(null, stack).apply(this, arguments);
         };
         chained.stack = stack;
         _.extend(chained, oneTimeStorage);
