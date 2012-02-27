@@ -329,7 +329,14 @@ $(document).ready(function() {
         equals(avg(0, 'a'),     0.5);
         equals(avg(1, 'b'),     4/3);
         equals(avg(1.5, 'b'),   1.625);
+        equals(_.reduce([2], f_.average()), 2);
+        equals(_.reduce([2, 2], f_.average()), 2);
         equals(_.reduce([5,7,1,3,9,2], f_.average()), 4.5);
+    });
+
+    test("f_.count", function() {
+        var count = f_.count(f_.getByProperty(o));
+        equals(_.reduce([2,3,1,4], f_.count(), 0), 4);
     });
 
     test("f_.min", function() {

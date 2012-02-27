@@ -173,6 +173,7 @@
     };
 
     // Get a property, use it to call the iterator
+    // Idea: use an object hash to getSet multiple properties
     f_.getSet = function(prop, iterator) {
         return function(obj) {
             obj[prop] = iterator(obj[prop]);
@@ -410,6 +411,7 @@
     f_.xor                              = f_.partial(f_.binaryExpr, xor);
 
     // ### Reducer Iterators
+    // May be getting the axe from 0.1
 
     f_.reduceExpr = function(expr, f_v) {
         var fn;

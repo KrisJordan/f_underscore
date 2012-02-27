@@ -106,24 +106,6 @@
             </ul>
             <a class="title" href="#string-method">String Methods</a>
             <a class="title" href="#array-method">Array Methods</a>
-            <a class="title" href="#reducers">Reducers</a>
-            <ul>
-                <li> - <a href="#sum">sum</a></li>
-                <li> - <a href="#product">product</a></li>
-                <li> - <a href="#count">count</a></li>
-                <li> - <a href="#min">min</a></li>
-                <li> - <a href="#max">max</a></li>
-                <li> - <a href="#average">average</a></li>
-            </ul>
-            <a class="title" href="#functions">Functions</a>
-            <ul>
-                <li> - <a href="#call">call</a></li>
-                <li> - <a href="#callByFunction">callByFunction</a></li>
-                <li> - <a href="#apply">apply</a></li>
-                <li> - <a href="#applyByFunction">applyByFunction</a></li>
-                <li> - <a href="#bind">bind</a></li>
-                <li> - <a href="#bindMethod">bindMethod</a></li>
-            </ul>
             <a class="title" href="#utility">Utility Functions</a>
             <ul>
                 <li> - <a href="#functionize">functionize</a></li>
@@ -133,6 +115,9 @@
                 <li> - <a href="#zipObject">zipObject</a></li>
             </ul>
             <a class="title" href="#changelog">Changelog</a>
+            <ul>
+                <li> - <a href="#v0.1.0">0.1.0 - 2/28/2012</a></li>
+            </ul>
         </div>
         <div class="container">
         <a name="top"></a>
@@ -523,8 +508,8 @@ _.map(stooges, f_.neg(f_.get('age')));
 </pre>
         
         <h2><a name="string-method">String Methods</a></h2>
-        <p><code>f_.stringMethod([f_val_string,] ...) =&gt; iterator(item|string)</code></p>
-        <p>The f_underscore.js API aliases all of the String's methods. The methods include: <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/charAt">charAt</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/charCodeAt">charCodeAt</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/concat">concat</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/indexOf">indexOf</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/lastIndexOf">lastIndexOf</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/match">match</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/replace">replace</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/search">search</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/slice">slice</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/split">split</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/substr">substr</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/substring">substring</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/toLowerCase">toLowerCase</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/toUpperCase">toUpperCase</a>.
+        <p><code>f_.<em>stringMethod</em>([f_val_string,] [f_val_arg, ...]) =&gt; iterator(item|string)</code></p>
+        <p>The f_underscore.js API aliases String's native methods to create simple, concise string manipulation iterators. The first argument to string methods is an optional <a href="#fval">f_val</a> that should return the string the method will be applied to if the iterator is called with a non-string. Subsequent arguments follow the same signature as you would pass to the method itself. String methods include: <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/charAt">charAt</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/charCodeAt">charCodeAt</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/concat">concat</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/indexOf">indexOf</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/lastIndexOf">lastIndexOf</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/match">match</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/replace">replace</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/search">search</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/slice">slice</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/split">split</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/substr">substr</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/substring">substring</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/toLowerCase">toLowerCase</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/toUpperCase">toUpperCase</a>.
         </p>
         <pre>
 var toUpper = f_.toUpperCase();
@@ -545,38 +530,13 @@ replaceSpacesInName({name:'l a r r y'});
 </pre>
         
         <h2><a name="array-method">Array Methods</a></h2>
-        
-        <p>Array methods include: <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/concat">concat</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/indexOf">indexOf</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/join">join</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/lastIndexOf">lastIndexOf</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/pop">pop</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/push">push</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/reverse">reverse</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/shift">shift</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/slice">slice</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/sort">sort</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/splice">splice</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/unshift">unshift</a>.
-
-        <h2><a name="reducers">Reducers</a></h2>
-        
-            <p><a class="function" name="sum">sum</a>
-			</p>
-            <p><a class="function" name="product">product</a>
-			</p>
-            <p><a class="function" name="count">count</a>
-			</p>
-            <p><a class="function" name="min">min</a>
-			</p>
-            <p><a class="function" name="max">max</a>
-			</p>
-            <p><a class="function" name="average">average</a>
-			</p>
-
-        <h2><a name="functions">Function Functions</a></h2>
-        
-            <p><a class="function" name="call">call</a>
-			</p>
-            <p><a class="function" name="callByFunction">callByFunction</a>
-			</p>
-            <p><a class="function" name="apply">apply</a>
-			</p>
-            <p><a class="function" name="applyByFunction">applyByFunction</a>
-			</p>
-            <p><a class="function" name="bind">bind</a>
-			</p>
-            <p><a class="function" name="bindMethod">bindMethod</a>
-			</p>
+        <p><code>f_.<em>arrayMethod</em>([f_val_string,] ...) =&gt; iterator(item|string)</code></p>
+        <p>The f_underscore.js API aliases Array's native methods to create simple, concise array manipulation iterators. The first argument to string methods is an optional <a href="#fval">f_val</a> that should return the string the method will be applied to if the iterator is called with a non-string. Subsequent arguments follow the same signature as you would pass to the method itself. Array methods include: <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/concat">concat</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/indexOf">indexOf</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/join">join</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/lastIndexOf">lastIndexOf</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/pop">pop</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/push">push</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/reverse">reverse</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/shift">shift</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/slice">slice</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/sort">sort</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/splice">splice</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/unshift">unshift</a>.
+        <pre>
+var parts = [ ['test', 'path'], ['next', 'path', 'here'] ];
+_.map(parts, f_.join('/'));
+=&gt; ['test/path', 'next/path/here'];
+</pre>
 
         <h2><a name="utility">Utility Functions</a></h2>
         
