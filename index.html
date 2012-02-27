@@ -266,9 +266,6 @@ aPlus1({a:10});
 var aPlus1_idiomatic = plus1(f_.get('a'));
 aPlus1_idiomatic({a:10});
 =&gt; 11
-var aPlus1_recursive = plus1(f_.get(f_.get('toAdd')));
-aPlus1_idiomatic({a:10,toAdd:'a'});
-=&gt; 11
 </pre>
 
         <p><a class="function" name="unary">unary expressions</a> <code>f_.<em>unaryExpr</em>([f_val]) =&gt; iterator(item)</code><br />
@@ -288,7 +285,7 @@ _.map([1, 2, 3], f_.multiply(3))
 _.map([{a : 1, b : 2}, {a : 2, b : 4}], f_.multiply(f_.get('a'), f_.get('b')));
 =&gt; [2, 4]
 </pre>
-        <p><a class="function" name="predicate">predicate 'truth test' iterators</a> <code>f_.<em>expr</em>() =&gt; iterator(item) =&gt; boolean</code><br />
+        <p><a class="function" name="predicate">predicate 'truth test' iterators</a> <code>f_.<em>expr</em>() =&gt; predicate(item) =&gt; boolean</code><br />
         Truth test iterator functions, or predicates, are returned by f_underscore.js functions <a href="#not">not</a>, <a href="#isEqual">isEqual</a>, <a href="#isNotEqual">isNotEqual</a>, <a href="#greaterThan">greaterThan</a>, <a href="#atLeast">atLeast</a>, <a href="#lessThan">lessThan</a>, <a href="#atMost">atMost</a>, <a href="#and">and</a>, <a href="#neither">neither</a>, <a href="#or">or</a>, and <a href="#xor">xor</a>. They're handy when paired with <a href="http://underscorejs.org/">underscore.js</a> functions such as <a href="http://underscorejs.org/#find">_.find</a>, <a href="http://underscorejs.org/#filter">_.filter</a>, <a href="http://underscorejs.org/#find">_.reject</a>, <a href="http://underscorejs.org/#all">_.all</a>, and <a href="http://underscorejs.org/#any">_.any</a>. 
         </p>
         <pre>
@@ -408,40 +405,147 @@ _.filter(stooges, atMost50);
         
         <h2><a name="logical">Logical</a></h2>
         
-            <p><a class="function" name="and">and</a>
+            <p><a class="function" name="and">and</a> <code>f_.and([f_val_L,] f_val_R) =&gt; predicate(item)</code><br />
+            Logical 'and' test comparing truthiness of left and right <a href="#fval">f_vals</a>. Returns true if both left and right <a href="#fval">f_vals</a> are true. It is a <a href="#binary">binary expression</a> that creates and returns a <a href="#predicate">predicate</a> iterator function.
 			</p>
-            <p><a class="function" name="neither">neither</a>
+        <pre>
+_.filter([1, 2, 3, 4, 5, 6], f_.and(f_.gt(2), f_.lt(5)));
+=&gt; [3, 4]
+</pre>
+
+            <p><a class="function" name="neither">neither</a> <code>f_.neither([f_val_L,] f_val_R) =&gt; predicate(item)</code><br />
+            Logical 'neither' test comparing truthiness of left and right <a href="#fval">f_vals</a>. Returns true if neither left nor right <a href="#fval">f_vals</a> are true. It is a <a href="#binary">binary expression</a> that creates and returns a <a href="#predicate">predicate</a> iterator function.
 			</p>
-            <p><a class="function" name="or">or</a>
+        <pre>
+_.filter([1, 2, 3, 4, 5], f_.neither(f_.eq(3), f_.eq(5)));
+=&gt; [1, 2, 4, 6]
+</pre>
+
+            <p><a class="function" name="or">or</a> <code>f_.or([f_val_L,] f_val_R) =&gt; predicate(item)</code><br />
+            Logical 'or' test comparing truthiness of left and right <a href="#fval">f_vals</a>. Returns true if either left nor right <a href="#fval">f_vals</a> are true. It is a <a href="#binary">binary expression</a> that creates and returns a <a href="#predicate">predicate</a> iterator function.
 			</p>
-            <p><a class="function" name="xor">xor</a>
+        <pre>
+_.filter([1, 2, 3, 4, 5], f_.or(f_.eq(3), f_.eq(5));
+=&gt; [3, 5]
+</pre>
 			</p>
-            <p><a class="function" name="not">not</a>
+            <p><a class="function" name="xor">xor</a> <code>f_.xor([f_val_L,] f_val_R) =&gt; predicate(item)</code><br />
+            Logical 'exclusive or' test comparing truthiness of left and right <a href="#fval">f_vals</a>. Returns true if only one of left or right <a href="#fval">f_vals</a> is true and the other is false. It is a <a href="#binary">binary expression</a> that creates and returns a <a href="#predicate">predicate</a> iterator function.
 			</p>
-            <p><a class="function" name="ternary">ternary</a>
+        <pre>
+_.filter([1, 2, 3, 4, 5], f_.xor(f_.eq(2), f_.lt(4)));
+=&gt; [1, 3]
+</pre>
+            <p><a class="function" name="not">not</a> <code>f_.not([f_val]) =&gt; predicate(item)</code><br />
+            Logical 'not' operator that returns the opposite of the truthiness of its <a href="#fval">f_val</a>. It is a <a href="#binary">unary expression</a> that creates and returns a <a href="#predicate">predicate</a> iterator function.
 			</p>
+        <pre>
+_.filter([1, 2, 3, 4, 5], f_.not(f_.isEqual(3)));
+=&gt; [1, 2, 4, 5]
+</pre>
 
         <h2><a name="binary">Arithmetic</a></h2>
         
-            <p><a class="function" name="add">add</a>
+            <p><a class="function" name="add">add</a> <code>f_.add([f_val_L,] f_val_R) =&gt; iterator(item)</code><br />
+            Add two numeric <a href="#fval">f_vals</a> with this <a href="#unary">binary expression</a> that creates and returns an iterator.
 			</p>
-            <p><a class="function" name="subtract">subtract</a>
+        <pre>
+_.map([1, 2, 3], f_.add(2));
+=&gt; [3, 4, 5]
+
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+_.map(stooges, f_.add(f_.get('age'), 2));
+=&gt; [42, 52, 62]
+</pre>
+            <p><a class="function" name="subtract">subtract</a> <code>f_.subtract([f_val_L,] f_val_R) =&gt; iterator(item)</code> <span class="alias">Alias: <b>sub</b></span><br />
+            Subtract the right numeric <a href="#fval">f_val</a> from the left numeric <a href="#fval">f_val</a> with this <a href="#binary">binary expression</a> that creates and returns an iterator.
 			</p>
-            <p><a class="function" name="multiply">multiply</a>
+        <pre>
+_.map([1, 2, 3], f_.subtract(2));
+=&gt; [-1, 0, 1]
+
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+_.map(stooges, f_.sub(f_.get('age'), 2));
+=&gt; [38, 48, 58]
+</pre>
+            <p><a class="function" name="multiply">multiply</a> <code>f_.multiply([f_val_L,] f_val_R) =&gt; iterator(item)</code> <span class="alias">Alias: <b>mul</b></span><br />
+            Multiply the numeric <a href="#fval">f_vals</a> with this <a href="#binary">binary expression</a> that creates and returns an iterator.
 			</p>
-            <p><a class="function" name="divide">divide</a>
+        <pre>
+_.map([1, 2, 3], f_.multiply(2));
+=&gt; [2, 4, 6]
+
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+_.map(stooges, f_.mul(f_.get('age'), 2));
+=&gt; [80, 100, 120]
+</pre>
+
+            <p><a class="function" name="divide">divide</a> <code>f_.multiply([f_val_L,] f_val_R) =&gt; iterator(item)</code> <span class="alias">Alias: <b>div</b></span><br />
+            Divide the left <a href="#fval">f_val</a> by the right <a href="#fval">f_val</a> with this <a href="#binary">binary expression</a> that creates and returns an iterator.
 			</p>
-            <p><a class="function" name="modulo">modulo</a>
+        <pre>
+_.map([1, 2, 3], f_.divide(2));
+=&gt; [0.5, 1, 1.5]
+
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+_.map(stooges, f_.div(f_.get('age'), 2));
+=&gt; [20, 25, 30]
+</pre>
+
+            <p><a class="function" name="modulo">modulo</a> <code>f_.modulo([f_val_L,] f_val_R) =&gt; iterator(item)</code> <span class="alias">Alias: <b>mod</b></span><br />
+            The remainder of integer division of the left <a href="#fval">f_val</a> by the right <a href="#fval">f_val</a> with this <a href="#binary">binary expression</a> that creates and returns an iterator.
 			</p>
-            <p><a class="function" name="increment">increment</a>
+        <pre>
+_.map([1, 2, 3, 4], f_.mod(2));
+=&gt; [1, 0, 1, 0]
+
+var evens = _.filter([1, 2, 3, 4], f_.eq(f_.mod(2), 0));
+=&gt; [2, 4]
+</pre>
+            <p><a class="function" name="increment">increment</a> <code>f_.increment([f_val]) =&gt; iterator(item)</code> <span class="alias">Alias: <b>incr</b></span><br />
+            Increment a numeric <a href="#fval">f_val</a> with this <a href="#unary">unary expression</a>.
 			</p>
-            <p><a class="function" name="decrement">decrement</a>
+        <pre>
+_.map([1, 2, 3, 4], f_.increment());
+=&gt; [2, 3, 4, 5]
+
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+_.map(stooges, f_.incr(f_.get('age')));
+=&gt; [41, 51, 61]
+</pre>
+            <p><a class="function" name="decrement">decrement</a> <code>f_.decrement([f_val]) =&gt; iterator(item)</code> <span class="alias">Alias: <b>decr</b></span><br />
+            Decrement a numeric <a href="#fval">f_val</a> with this <a href="#unary">unary expression</a>.
 			</p>
-            <p><a class="function" name="square">square</a>
+        <pre>
+_.map([1, 2, 3, 4], f_.decrement());
+=&gt; [0, 1, 2, 3]
+
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+_.map(stooges, f_.decr(f_.get('age')));
+=&gt; [39, 49, 59]
+</pre>
+            <p><a class="function" name="square">square</a> <code>f_.square([f_val]) =&gt; iterator(item)</code> <span class="alias">Alias: <b>sqr</b></span><br />
+            Square a numeric <a href="#fval">f_val</a> with this <a href="#unary">unary expression</a>.
 			</p>
-            <p><a class="function" name="negate">negate</a>
+        <pre>
+_.map([1, 2, 3, 4], f_.square());
+=&gt; [1, 4, 9, 16]
+
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+_.map(stooges, f_.sqr(f_.get('age')));
+=&gt; [1600, 2500, 3600]
+</pre>
+            <p><a class="function" name="negate">negate</a> <code>f_.negate([f_val]) =&gt; iterator(item)</code> <span class="alias">Alias: <b>neg</b></span><br />
+            Negate a numeric <a href="#fval">f_val</a> with this <a href="#unary">unary expression</a>.
 			</p>
-        
+        <pre>
+_.map([1, 2, 3, 4], f_.negate());
+=&gt; [-1, -2, -3, -4]
+
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+_.map(stooges, f_.neg(f_.get('age')));
+=&gt; [-40, -50, -60]
+</pre>
         
         <h2><a name="string-method">String Methods</a></h2>
         

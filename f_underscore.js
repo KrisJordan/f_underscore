@@ -115,6 +115,9 @@
     // as an argument to the next. The reverse call order of `_.compose`.
     f_.thread = function() {
         var args = arguments;
+        if(_.isArray(args[0])) {
+            args = args[0];
+        }
         return function() {
             var val = [].slice.apply(arguments);
             for(var i = 0; i < args.length; i++) {
@@ -452,7 +455,7 @@
             stack.push(f_.get(get));
         }
         var chained = function() {
-            return f_.thread.apply(null, stack).apply(this, arguments);
+            return f_.thread(stack).apply(this, arguments);
         };
         chained.stack = stack;
         _.extend(chained, oneTimeStorage);
