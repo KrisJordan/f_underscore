@@ -64,12 +64,19 @@
                 <li> - <a href="#set">set</a></li>
                 <li> - <a href="#setByProperty">setByProperty</a></li>
             </ul>
+            <a class="title" href="#expressions">Expressions</a>
+            <ul>
+                <li> - <a href="#fval">f_val parameters</a></li>
+                <li> - <a href="#unary">unary expressions</a></li>
+                <li> - <a href="#binary">binary expressions</a></li>
+                <li> - <a href="#binary">predicates</a></li>
+            </ul>
             <a class="title" href="#equality">Equality</a>
             <ul>
                 <li> - <a href="#isEqual">isEqual</a></li>
                 <li> - <a href="#isNotEqual">isNotEqual</a></li>
             </ul>
-            <a class="title" href="#equality">Relational</a>
+            <a class="title" href="#relational">Relational</a>
             <ul>
                 <li> - <a href="#greaterThan">greaterThan</a></li>
                 <li> - <a href="#atLeast">atLeast</a></li>
@@ -85,7 +92,7 @@
                 <li> - <a href="#not">not</a></li>
                 <li> - <a href="#ternary">ternary</a></li>
             </ul>
-            <a class="title" href="#binary">Arithmetic</a>
+            <a class="title" href="#arithmetic">Arithmetic</a>
             <ul>
                 <li> - <a href="#add">add</a></li>
                 <li> - <a href="#subtract">subtract</a></li>
@@ -98,39 +105,7 @@
                 <li> - <a href="#negate">negate</a></li>
             </ul>
             <a class="title" href="#string-method">String Methods</a>
-            <ul>
-                <li> - <a href="#append">append</a></li>
-                <li> - <a href="#charAt">charAt</a></li>
-                <li> - <a href="#charCodeAt">charCodeAt</a></li>
-                <li> - <a href="#concat">concat</a></li>
-                <li> - <a href="#indexOf">indexOf</a></li>
-                <li> - <a href="#lastIndexOf">lastIndexOf</a></li>
-                <li> - <a href="#match">match</a></li>
-                <li> - <a href="#prepend">prepend</a></li>
-                <li> - <a href="#replace">replace</a></li>
-                <li> - <a href="#search">search</a></li>
-                <li> - <a href="#slice">slice</a></li>
-                <li> - <a href="#split">split</a></li>
-                <li> - <a href="#substr">substr</a></li>
-                <li> - <a href="#substring">substring</a></li>
-                <li> - <a href="#toLowerCase">toLowerCase</a></li>
-                <li> - <a href="#toUpperCase">toUpperCase</a></li>
-            </ul>
             <a class="title" href="#array-method">Array Methods</a>
-            <ul>
-                <li> - <a href="#pop">pop</a></li>
-                <li> - <a href="#push">push</a></li>
-                <li> - <a href="#reverse">reverse</a></li>
-                <li> - <a href="#shift">shift</a></li>
-                <li> - <a href="#sort">sort</a></li>
-                <li> - <a href="#splice">splice</a></li>
-                <li> - <a href="#unshift">unshift</a></li>
-                <li> - <a href="#join">join</a></li>
-                <li> - <a href="#slice">slice</a></li>
-                <li> - <a href="#indexOf">indexOf</a></li>
-                <li> - <a href="#lastIndexOf">lastIndexOf</a></li>
-                <li> - <a href="#concat">concat</a></li>
-            </ul>
             <a class="title" href="#reducers">Reducers</a>
             <ul>
                 <li> - <a href="#sum">sum</a></li>
@@ -444,7 +419,7 @@ _.filter([1, 2, 3, 4, 5], f_.not(f_.isEqual(3)));
 =&gt; [1, 2, 4, 5]
 </pre>
 
-        <h2><a name="binary">Arithmetic</a></h2>
+        <h2><a name="arithmetic">Arithmetic</a></h2>
         
             <p><a class="function" name="add">add</a> <code>f_.add([f_val_L,] f_val_R) =&gt; iterator(item)</code><br />
             Add two numeric <a href="#fval">f_vals</a> with this <a href="#unary">binary expression</a> that creates and returns an iterator.
@@ -548,66 +523,30 @@ _.map(stooges, f_.neg(f_.get('age')));
 </pre>
         
         <h2><a name="string-method">String Methods</a></h2>
-        
-            <p><a class="function" name="append">append</a>
-			</p>
-            <p><a class="function" name="charAt">charAt</a>
-			</p>
-            <p><a class="function" name="charCodeAt">charCodeAt</a>
-			</p>
-            <p><a class="function" name="concat">concat</a>
-			</p>
-            <p><a class="function" name="indexOf">indexOf</a>
-			</p>
-            <p><a class="function" name="lastIndexOf">lastIndexOf</a>
-			</p>
-            <p><a class="function" name="match">match</a>
-			</p>
-            <p><a class="function" name="prepend">prepend</a>
-			</p>
-            <p><a class="function" name="replace">replace</a>
-			</p>
-            <p><a class="function" name="search">search</a>
-			</p>
-            <p><a class="function" name="slice">slice</a>
-			</p>
-            <p><a class="function" name="split">split</a>
-			</p>
-            <p><a class="function" name="substr">substr</a>
-			</p>
-            <p><a class="function" name="substring">substring</a>
-			</p>
-            <p><a class="function" name="toLowerCase">toLowerCase</a>
-			</p>
-            <p><a class="function" name="toUpperCase">toUpperCase</a>
-			</p>
+        <p><code>f_.stringMethod([f_val_string,] ...) =&gt; iterator(item|string)</code></p>
+        <p>The f_underscore.js API aliases all of the String's methods. The methods include: <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/charAt">charAt</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/charCodeAt">charCodeAt</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/concat">concat</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/indexOf">indexOf</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/lastIndexOf">lastIndexOf</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/match">match</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/replace">replace</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/search">search</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/slice">slice</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/split">split</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/substr">substr</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/substring">substring</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/toLowerCase">toLowerCase</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/toUpperCase">toUpperCase</a>.
+        </p>
+        <pre>
+var toUpper = f_.toUpperCase();
+toUpper('larry');
+=&gt; LARRY
+
+var nameToUpper = f_.toUpperCase(f_.get('name'));
+nameToUpper({name:'larry'});
+=&gt; LARRY
+
+var splitSpaces = f_.split(' ');
+splitSpaces('larry curly moe');
+=&gt; ['larry', 'curly', 'moe']
+
+var replaceSpacesInName = f_.replace(f_.get('name'), / /g, '');
+replaceSpacesInName({name:'l a r r y'});
+=&gt; larry
+</pre>
         
         <h2><a name="array-method">Array Methods</a></h2>
         
-            <p><a class="function" name="concat">concat</a>
-			</p>
-            <p><a class="function" name="indexOf">indexOf</a>
-			</p>
-            <p><a class="function" name="join">join</a>
-			</p>
-            <p><a class="function" name="lastIndexOf">lastIndexOf</a>
-			</p>
-            <p><a class="function" name="pop">pop</a>
-			</p>
-            <p><a class="function" name="push">push</a>
-			</p>
-            <p><a class="function" name="reverse">reverse</a>
-			</p>
-            <p><a class="function" name="shift">shift</a>
-			</p>
-            <p><a class="function" name="slice">slice</a>
-			</p>
-            <p><a class="function" name="sort">sort</a>
-			</p>
-            <p><a class="function" name="splice">splice</a>
-			</p>
-            <p><a class="function" name="unshift">unshift</a>
-			</p>
+        <p>Array methods include: <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/concat">concat</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/indexOf">indexOf</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/join">join</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/lastIndexOf">lastIndexOf</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/pop">pop</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/push">push</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/reverse">reverse</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/shift">shift</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/slice">slice</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/sort">sort</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/splice">splice</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/unshift">unshift</a>.
 
         <h2><a name="reducers">Reducers</a></h2>
         
