@@ -319,6 +319,17 @@ $(document).ready(function() {
         equals(f_.xor(f_.get('t'), f_.get('t'))(bools), false);
     });
 
+    test("f_.ternary", function() {
+        equals(f_.ternary(true, false)(true),   true);
+        equals(f_.ternary(true, false)(false),  false);
+        equals(f_.ternary(false, true)(true),   false);
+        equals(f_.ternary(false, true)(false),  true);
+        equals(f_.ternary(f_.get('t'), f_.get('t'), f_.get('f'))(bools),  true);
+        equals(f_.ternary(f_.get('f'), f_.get('t'), f_.get('f'))(bools),  false);
+        equals(f_.ternary(f_.get('t'), f_.get('f'), f_.get('t'))(bools),  false);
+        equals(f_.ternary(f_.get('f'), f_.get('f'), f_.get('t'))(bools),  true);
+    });
+
     test("f_(). chaining", function() {
         equals(f_().get('a')(o), 1);
         equals(f_('a')(o), 1);

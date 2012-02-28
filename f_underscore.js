@@ -194,6 +194,21 @@
         }
     };
 
+    // Ternary Expr
+    f_.ternaryExpr = function(expr, f_v_a, f_v_b, f_v_c) {
+        if(f_v_c === undefined) {
+            f_v_c = f_v_b;
+            f_v_b = f_v_a;
+            f_v_a = _.identity;
+        }
+        f_v_a = f_.functionize(f_v_a);
+        f_v_b = f_.functionize(f_v_b);
+        f_v_c = f_.functionize(f_v_c);
+        return function(obj) {
+            return expr(f_v_a(obj), f_v_b(obj), f_v_c(obj));
+        }
+    };
+
     // Method  Expr
     f_.methodExpr = function(method) {
         var args = _.map(_.rest(arguments), f_.functionize);
@@ -246,7 +261,10 @@
     neither     = function(l, r)        { return !l && !r; },
     or          = function(l, r)        { return l || r; },
     xor         = function(l, r)        { return (l && !r) || (!l && r); },
-    not         = function(l)           { return !l; }
+    not         = function(l)           { return !l; },
+
+    // Ternary
+    ternary     = function(a, b, c)     { return a ? b : c; }
 
     ;
 
@@ -287,6 +305,9 @@
     f_.neither                          = f_.partial(f_.binaryExpr, neither);
     f_.or                               = f_.partial(f_.binaryExpr, or);
     f_.xor                              = f_.partial(f_.binaryExpr, xor);
+
+    // Ternary
+    f_.ternary                          = f_.partial(f_.ternaryExpr, ternary);
 
     // ### String/Array Method Iterators
     var methods = [ 
