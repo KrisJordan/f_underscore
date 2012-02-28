@@ -11,8 +11,21 @@
             .container p { font-size: 14px; line-height: 25px; }
             .container table td { font-size: 14px; padding: 5px 5px 5px 0; }
             .container p a { font-weight: bold; }
-            pre { font-size: 12px; font-family: Monaco, Consolas, "Lucida Console", monospace; line-height: 18px; border-left: 5px solid #ccc; padding-left: 20px; margin: 0 0 20px 0; }
-            span.alias { margin-left: 20px; }
+            
+            h2 {
+                margin-top: 2em;
+            }
+            
+            pre {
+                font-size: 11px;
+                font-family: Monaco, Consolas, "Lucida Console", monospace;
+                line-height: 18px;
+                border-left: 5px solid #CCC;
+                padding-left: 20px;
+                margin: 0 0 20px 20px;
+                line-height: 22px;
+                background: whiteSmoke;
+            }    
 
             div#sidebar {
                 position: fixed;
@@ -143,20 +156,20 @@ _.map([1, 2, 3], f_.multiply(3));
 =&gt; [3, 6, 9]
 _.filter([1, 2, 3], f_.greaterThan(2));
 =&gt; [3]
-_.sortBy([{name : 'moe'}, {name : 'larry'}, {name : 'curly'}], f_.get('name'));
-=&gt; [{name : 'curly'}, {name : 'larry'}, {name : 'moe'}]
+_.sortBy([{name:'moe'}, {name:'larry'}, {name:'curly'}], f_.get('name'));
+=&gt; [{name:'curly'}, {name:'larry'}, {name:'moe'}]
 
 // Chaining
 _.filter([1, 2, 3, 4, 5, 6], f_().modulo(2).isEqual(0));
 =&gt; [2, 4, 6]
-var stooges = [{name : 'moe'}, {name : 'larry'}, {name : 'curly'}];
+var stooges = [{name:'moe'}, {name:'larry'}, {name:'curly'}];
 _.map(stooges, f_().get('name').substr(0,1).toUpperCase());
 =&gt; ['M', 'L', 'C']
 
 // Composition
-var data =          [ {name : 'Diane', age : 21, sex : 'f'},
-                      {name : 'Jack',  age : 20, sex : 'm'},
-                      {name : 'Moe',   age : 40, sex : 'm'} ];
+var data =          [ {name:'Diane', age:21, sex:'f'},
+                      {name:'Jack',  age:20, sex:'m'},
+                      {name:'Moe',   age:40, sex:'m'} ];
 var userCriteria =  [ [ 'sex', 'isEqual',     'm' ],
                       [ 'age', 'greaterThan', 20  ] ];
 var filterFn  = _.reduce(userCriteria,
@@ -165,7 +178,7 @@ var filterFn  = _.reduce(userCriteria,
                             return f_.and(memo, f_[expr](f_.get(prop), val));
                         }, true);
 _.filter(data, filterFn);
-=&gt; [{name : 'Moe',  age : 40, sex : 'm'}]
+=&gt; [{name:'Moe',  age:40, sex:'m'}]
 </pre>
 
         <h2><a name="accessors">Accessors</a></h2>
@@ -175,9 +188,9 @@ _.filter(data, filterFn);
         </p>
         <pre>
 var getter = f_.get('flavor');
-getter({flavor : 'Vanilla', size : 'Large'});
+getter({flavor:'Vanilla', size:'Large'});
 =&gt; 'Vanilla'
-var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+var stooges = [{name:'moe', age:40}, {name:'larry', age:50}, {name:'curly', age:60}];
 _.map(stooges, f_.get('name'));
 =&gt; ['moe', 'larry', 'curly']
 _.map(stooges, f_.toUpperCase(f_.get('name')));
@@ -188,7 +201,7 @@ _.map(stooges, f_.toUpperCase(f_.get('name')));
         Returns an <b>iterator</b> function that will return the value of <b>object[property]</b> when called.
         </p>
         <pre>
-var iceCream = {flavor : 'Vanilla', size : 'Large', cone : 'Waffle'};
+var iceCream = {flavor:'Vanilla', size:'Large', cone:'Waffle'};
 var getProperty = f_.getByProperty(iceCream);
 getProperty('flavor');
 =&gt; 'Vanilla'
@@ -200,45 +213,45 @@ _.map(['cone', 'flavor'], f_.getByProperty(iceCream));
             Returns an <b>iterator</b> function that will create and return a new object with properties in the <b>propertyNameArray</b> whose values are copied from <b>object</b>.
             </p>
         <pre>
-var iceCream = {flavor : 'Vanilla', size : 'Large', cone : 'Waffle'};
+var iceCream = {flavor:'Vanilla', size:'Large', cone:'Waffle'};
 var projectFn = f_.project(['cone', 'flavor']);
 projectFn(iceCream);
-=&gt; {cone : 'Waffle', flavor : 'Vanilla'}
+=&gt; {cone:'Waffle', flavor:'Vanilla'}
 </pre>
 
             <p><a class="function" name="getSet">getSet</a> <code>f_.getSet(property, fn) =&gt; iterator(object)</code><br />
             Returns an <b>iterator</b> function that will set <b>object[property]</b> to the return value of <b>fn(object[property])</b> and then returns <b>object</b>.
         <pre>
-var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+var stooges = [{name:'moe', age:40}, {name:'larry', age:50}, {name:'curly', age:60}];
 var incrementAge = f_.getSet('age', function(ageVal) { return ageVal + 1; });
 incrementAge(stooges[0]);
-=&gt; {name : 'moe', age : 41}
+=&gt; {name:'moe', age:41}
 _.map(stooges, f_.getSet('age', f_.incr()));
-=&gt; [{name : 'moe', age : 42}, {name : 'larry', age : 51}, {name : 'curly', age : 61}]
+=&gt; [{name:'moe', age:42}, {name:'larry', age:51}, {name:'curly', age:61}]
 </pre>
 
         <p><a class="function" name="set">set</a> <code>f_.set(property, f_val) =&gt; iterator(object)</code><br />
         Returns an <b>iterator</b> function that will set the value of <b>object[property]</b> to the evaluation of <b>f_val</b> and then returns <b>object</b>. 
         </p>
         <pre>
-var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+var stooges = [{name:'moe', age:40}, {name:'larry', age:50}, {name:'curly', age:60}];
 var setter = f_.set('age', 41);
 setter(stooges[0]);
-=&gt; {name : 'moe', age : 41}
+=&gt; {name:'moe', age:41}
 _.map(stooges, f_.set('age', f_.incr(f_.get('age'))));
-=&gt; [{name : 'moe', age : 42}, {name : 'larry', age : 51}, {name : 'curly', age : 61}]
+=&gt; [{name:'moe', age:42}, {name:'larry', age:51}, {name:'curly', age:61}]
 </pre>
 
         <p><a class="function" name="setByProperty">setByProperty</a> <code>f_.setByProperty(object, f_val) =&gt; iterator(property)</code><br />
         Returns an <b>iterator</b> function that will set the value of <b>object[property]</b> to the evaluation of <b>f_val</b>. The resulting <b>iterator</b> will return <b>object</b>. 
         </p>
         <pre>
-var player = {name : 'Kendall Marshall', points : 22, assists : 13, turnovers: 1};
+var player = {name:'Kendall Marshall', points:22, assists:13, turnovers: 1};
 var reset = f_.setByProperty(player, 0);
 reset('points');
-=&gt; {name : 'Kendall Marshall', points : 0, assists : 13, turnovers: 1}
+=&gt; {name:'Kendall Marshall', points:0, assists:13, turnovers: 1}
 _.map(['assists', 'turnovers'], reset);
-=&gt; {name : 'Kendall Marshall', points : 0, assists : 0, turnovers: 0}
+=&gt; {name:'Kendall Marshall', points:0, assists:0, turnovers: 0}
 </pre>
             </p>
 
@@ -249,7 +262,7 @@ _.map(['assists', 'turnovers'], reset);
         <pre>
 _.map([1, 2, 3], f_.negate())
 =&gt; [-1, -2, -3]
-_.map([{a : 1}, {a : 2}, {a : 3}], f_.negate(f_.get('a')));
+_.map([{a:1}, {a:2}, {a:3}], f_.negate(f_.get('a')));
 =&gt; [-1, -2, -3]
 </pre>
         <p><a class="function" name="binary">binary exprs</a> <code>f_.<em>binaryExpr</em>([f_val_left,] f_val_right) =&gt; iterator(item)</code><br />
@@ -258,7 +271,7 @@ _.map([{a : 1}, {a : 2}, {a : 3}], f_.negate(f_.get('a')));
         <pre>
 _.map([1, 2, 3], f_.multiply(3))
 =&gt; [3, 6, 9]
-_.map([{a : 1, b : 2}, {a : 2, b : 4}], f_.multiply(f_.get('a'), f_.get('b')));
+_.map([{a:1, b:2}, {a:2, b:4}], f_.multiply(f_.get('a'), f_.get('b')));
 =&gt; [2, 4]
 </pre>
         <p><a class="function" name="predicate">predicate 'truth test' iterators</a> <code>f_.<em>expr</em>() =&gt; predicate(item) =&gt; boolean</code><br />
@@ -292,9 +305,9 @@ aPlus1_idiomatic({a:10});
         <pre>
 _.filter([3, 1, 2], f_.lessThan(2))
 =&gt; [1]
-var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+var stooges = [{name:'moe', age:40}, {name:'larry', age:50}, {name:'curly', age:60}];
 _.filter(stooges, f_.isEqual(f_.get('age'), 50));
-=&gt; [{name : 'larry', age : 50}]
+=&gt; [{name:'larry', age:50}]
 </pre>
 
         <h2><a name="equality">Equality</a></h2>
@@ -310,10 +323,10 @@ _.filter([1, 2, 3], f_.eq(3));
 =&gt; [3]
 
 var nameIsCurly = f_.isEqual(f_.get('name'), 'curly');
-nameIsCurly({name : 'moe'});
+nameIsCurly({name:'moe'});
 =&gt; false
-_.filter([{name : 'moe'}, {name : 'larry'}, {name : 'curly'}], nameIsCurly);
-=&gt; [{name : 'curly'}]
+_.filter([{name:'moe'}, {name:'larry'}, {name:'curly'}], nameIsCurly);
+=&gt; [{name:'curly'}]
 </pre>
 
             <p><a class="function" name="isNotEqual">isNotEqual</a> <code>f_.isNotEqual([f_val_L,] f_val_R) =&gt; predicate(item)</code> <span class="alias">Alias: <b>neq</b></span><br />
@@ -327,10 +340,10 @@ _.filter([1, 2, 3], f_.neq(3));
 =&gt; [1, 2]
 
 var nameIsNotCurly = f_.isNotEqual(f_.get('name'), 'curly');
-nameIsNotCurly({name : 'moe'});
+nameIsNotCurly({name:'moe'});
 =&gt; true
-_.filter([{name : 'moe'}, {name : 'larry'}, {name : 'curly'}], nameIsNotCurly);
-=&gt; [{name : 'moe'}, {name : 'larry'}]
+_.filter([{name:'moe'}, {name:'larry'}, {name:'curly'}], nameIsNotCurly);
+=&gt; [{name:'moe'}, {name:'larry'}]
 </pre>
         
         <h2><a name="relational">Relational</a></h2>
@@ -346,11 +359,11 @@ _.filter([1, 2, 3], f_.gt(2));
 =&gt; [3]
 
 var olderThan40 = f_.greaterThan(f_.get('age'), 40);
-olderThan40({ name : 'moe', age : 40});
+olderThan40({ name:'moe', age:40});
 =&gt; false 
-var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+var stooges = [{name:'moe', age:40}, {name:'larry', age:50}, {name:'curly', age:60}];
 _.filter(stooges, olderThan40);
-=&gt; [{name : 'larry', age : 50}, {name : 'curly', age : 60}]
+=&gt; [{name:'larry', age:50}, {name:'curly', age:60}]
 </pre>
             <p><a class="function" name="atLeast">atLeast</a> <code>f_.atLeast([f_val_L,] f_val_R) =&gt; predicate(item)</code> <span class="alias">Alias: <b>gte</b></span><br />
             At least is a greater than or equal to test comparing left and right <a href="#fval">f_vals</a>. It is a <a href="#binary">binary expression</a> that creates and returns a <a href="#predicate">predicate</a> iterator function.
@@ -363,11 +376,11 @@ _.filter([1, 2, 3], f_.gte(2));
 =&gt; [2, 3]
 
 var atLeast50 = _.atLeast(f_.get('age'), 50);
-atLeast50({name : 'moe', age : 40});
+atLeast50({name:'moe', age:40});
 =&gt; false 
-var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+var stooges = [{name:'moe', age:40}, {name:'larry', age:50}, {name:'curly', age:60}];
 _.filter(stooges, atLeast50);
-=&gt; [{name : 'larry', age : 50}, {name : 'curly', age : 60}]
+=&gt; [{name:'larry', age:50}, {name:'curly', age:60}]
 </pre>
             <p><a class="function" name="lessThan">lessThan</a> <code>f_.lessThan([f_val_L,] f_val_R) =&gt; predicate(item)</code> <span class="alias">Alias: <b>lt</b></span><br />
             Greater than test comparing left and right <a href="#fval">f_vals</a>. It is a <a href="#binary">binary expression</a> that creates and returns a <a href="#predicate">predicate</a> iterator function.
@@ -380,11 +393,11 @@ _.filter([1, 2, 3], f_.lt(2));
 =&gt; [1]
 
 var youngerThan50 = f_.lessThan(f_.get('age'), 50);
-youngerThan50({name : 'moe', age : 40});
+youngerThan50({name:'moe', age:40});
 =&gt; true
-var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+var stooges = [{name:'moe', age:40}, {name:'larry', age:50}, {name:'curly', age:60}];
 _.filter(stooges, youngerThan50);
-=&gt; [{name : 'moe', age : 40}]
+=&gt; [{name:'moe', age:40}]
 </pre>
             <p><a class="function" name="atMost">atMost</a> <code>f_.atMost([f_val_L,] f_val_R) =&gt; predicate(item)</code> <span class="alias">Alias: <b>lte</b></span><br />
             At most is a less than or equal to test comparing left and right <a href="#fval">f_vals</a>. It is a <a href="#binary">binary expression</a> that creates and returns a <a href="#predicate">predicate</a> iterator function.
@@ -397,11 +410,11 @@ _.filter([1, 2, 3], f_.lte(2));
 =&gt; [1, 2]
 
 var atMost50 = _.atMost(f_.get('age'), 50);
-atMost50({name : 'moe', age : 40});
+atMost50({name:'moe', age:40});
 =&gt; true 
-var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+var stooges = [{name:'moe', age:40}, {name:'larry', age:50}, {name:'curly', age:60}];
 _.filter(stooges, atMost50);
-=&gt; [{name : 'moe', age : 40}, {name : 'larry', age : 50}]
+=&gt; [{name:'moe', age:40}, {name:'larry', age:50}]
 </pre>
         
         <h2><a name="logical">Logical</a></h2>
@@ -454,7 +467,7 @@ _.filter([1, 2, 3, 4, 5], f_.not(f_.isEqual(3)));
 _.map([1, 2, 3], f_.add(2));
 =&gt; [3, 4, 5]
 
-var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+var stooges = [{name:'moe', age:40}, {name:'larry', age:50}, {name:'curly', age:60}];
 _.map(stooges, f_.add(f_.get('age'), 2));
 =&gt; [42, 52, 62]
 </pre>
@@ -465,7 +478,7 @@ _.map(stooges, f_.add(f_.get('age'), 2));
 _.map([1, 2, 3], f_.subtract(2));
 =&gt; [-1, 0, 1]
 
-var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+var stooges = [{name:'moe', age:40}, {name:'larry', age:50}, {name:'curly', age:60}];
 _.map(stooges, f_.sub(f_.get('age'), 2));
 =&gt; [38, 48, 58]
 </pre>
@@ -476,7 +489,7 @@ _.map(stooges, f_.sub(f_.get('age'), 2));
 _.map([1, 2, 3], f_.multiply(2));
 =&gt; [2, 4, 6]
 
-var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+var stooges = [{name:'moe', age:40}, {name:'larry', age:50}, {name:'curly', age:60}];
 _.map(stooges, f_.mul(f_.get('age'), 2));
 =&gt; [80, 100, 120]
 </pre>
@@ -488,7 +501,7 @@ _.map(stooges, f_.mul(f_.get('age'), 2));
 _.map([1, 2, 3], f_.divide(2));
 =&gt; [0.5, 1, 1.5]
 
-var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+var stooges = [{name:'moe', age:40}, {name:'larry', age:50}, {name:'curly', age:60}];
 _.map(stooges, f_.div(f_.get('age'), 2));
 =&gt; [20, 25, 30]
 </pre>
@@ -510,7 +523,7 @@ var evens = _.filter([1, 2, 3, 4], f_.eq(f_.mod(2), 0));
 _.map([1, 2, 3, 4], f_.increment());
 =&gt; [2, 3, 4, 5]
 
-var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+var stooges = [{name:'moe', age:40}, {name:'larry', age:50}, {name:'curly', age:60}];
 _.map(stooges, f_.incr(f_.get('age')));
 =&gt; [41, 51, 61]
 </pre>
@@ -521,7 +534,7 @@ _.map(stooges, f_.incr(f_.get('age')));
 _.map([1, 2, 3, 4], f_.decrement());
 =&gt; [0, 1, 2, 3]
 
-var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+var stooges = [{name:'moe', age:40}, {name:'larry', age:50}, {name:'curly', age:60}];
 _.map(stooges, f_.decr(f_.get('age')));
 =&gt; [39, 49, 59]
 </pre>
@@ -532,7 +545,7 @@ _.map(stooges, f_.decr(f_.get('age')));
 _.map([1, 2, 3, 4], f_.square());
 =&gt; [1, 4, 9, 16]
 
-var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+var stooges = [{name:'moe', age:40}, {name:'larry', age:50}, {name:'curly', age:60}];
 _.map(stooges, f_.sqr(f_.get('age')));
 =&gt; [1600, 2500, 3600]
 </pre>
@@ -543,7 +556,7 @@ _.map(stooges, f_.sqr(f_.get('age')));
 _.map([1, 2, 3, 4], f_.negate());
 =&gt; [-1, -2, -3, -4]
 
-var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+var stooges = [{name:'moe', age:40}, {name:'larry', age:50}, {name:'curly', age:60}];
 _.map(stooges, f_.neg(f_.get('age')));
 =&gt; [-40, -50, -60]
 </pre>
@@ -629,7 +642,7 @@ canWithdraw20Dollars({name: 'curly', balance: 25});
 			</p>
             <pre>
 f_.zipObject(['a','b'], [1, 2]);
-=&gt; {a : 1, b : 2}
+=&gt; {a:1, b:2}
 </pre>
 
         <h2><a name="chaining">Chaining</a></h2>
@@ -643,9 +656,9 @@ canWithdraw20Dollars({name: 'moe', balance: 15});
 canWithdraw20Dollars({name: 'curly', balance: 25});
 =&gt; true
 
-var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+var stooges = [{name:'moe', age:40}, {name:'larry', age:50}, {name:'curly', age:60}];
 _.filter(stooges, f_('age').gt(40));
-=&gt; [{name : 'larry', age : 50}, {name : 'curly', age : 60}]
+=&gt; [{name:'larry', age:50}, {name:'curly', age:60}]
 </pre>
         <h2><a name="changelog">Changelog</a></h2>
         <p><a class="function" name="v0.1.0">v0.1.0 - 2/28/2012</a><br />
