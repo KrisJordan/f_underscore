@@ -1,7 +1,7 @@
-//      f_underscore.js 0.0.1
+//      f_underscore.js 0.1.0
 //      (c) 2012 Kris Jordan
 //      `f_underscore` is freely distributable under the MIT license.
-//      For all details and documentation:
+//      Documentation and details at:
 //      http://krisjordan.com/f_underscore
 
 (function() {
@@ -9,33 +9,9 @@
     // Baseline
     // --------
 
-    // All of `f_`'s functions are plain old functions bundled in an object.
-    var f_  = function(get) { return wrapper(get); };
-
-    // var wrapper = function() { this._stack = []; };
-    // f_.prototype = wrapper.prototype;
-
-    // // Helper function to continue chaining intermediate results.
-    // var result = function(obj, chain) {
-    //   return chain ? _(obj).chain() : obj;
-    // };
-
-    // // A method to easily add functions to the OOP wrapper.
-    // var addToWrapper = function(name, func) {
-    //   wrapper.prototype[name] = function() {
-    //     var args = slice.call(arguments);
-    //     unshift.call(args, this._wrapped);
-    //     return result(func.apply(_, args), this._chain);
-    //   };
-    // };
-
-    // f_.mixin = function(obj) {
-    //   _.each(_.functions(obj), function(name){
-    //     addToWrapper(name, f_[name] = obj[name]);
-    //   });
-    // };
-
-    // end chain, fluent api support
+    // All of `f_`'s functions are defined as properties on the f_ function.
+    // The f_ function kicks off chaining.
+    var f_  = function(property) { return _chain(property); };
 
     // Export `f_` to the window/global namespace.
     // Establish the root object, `window` in the browser, or `global` on 
@@ -51,17 +27,7 @@
     }
 
     // Current version.
-    f_.VERSION = '0.0.1';
-
-    // Shorthand for the identity function.
-    f_.I =
-    f_.i = _.identity;
-
-    // More aliases.
-    var ArrayProto  = Array.prototype,
-        ObjProto    = Object.prototype,
-        StringProto = String.prototype,
-        FuncProto   = Function.prototype;
+    f_.VERSION = '0.1.0';
 
     // Given two arrays of same length, one with strings/keys, the other with values, 
     // return an object comprised of the keys and values.
@@ -71,28 +37,6 @@
         _.each(pairs, function(pair) {
             result[pair[0]] = pair[1];
         });
-        return result;
-    };
-
-    // Given two arrays return an array of all permutations of one item selected
-    // from each array.
-    // TODO: test, add multiple arg support
-    f_.permute = function(l, r) {
-	    if(l.length === 0 && r.length > 0) {
-	        var temp = r;
-            r = l;
-            l = temp;
-        }
-        var result = [];
-        for(var i = 0; i < l.length; i++) {
-            if(r.length > 0) {
-                for(var j = 0; j < r.length; j++) {
-                    result.push([l[i], r[j]]);
-                }
-            } else {
-                result.push([l[i]]);
-            }
-        }
         return result;
     };
 
@@ -127,25 +71,6 @@
         };
     };
 
-    // TODO: Document, test, and decide whether to keep.
-    f_.apply = function(fn) {
-        return function(obj) {
-            return fn.apply(obj, arguments);
-        };
-    };
-
-    f_.applyFunction = function(obj) {
-        return function(fn) {
-            return fn.apply(obj, arguments);
-        };
-    };
-
-    f_.call = function(fn) {
-        return function(obj) {
-            return fn(obj);
-        };
-    };
-
     f_.callFunction = function(obj) {
         return function(fn) {
             return fn(obj);
@@ -163,8 +88,6 @@
     // ### Accessors
 
     // Make a function that will return the specified property when invoked
-    //
-    // // Need to clean up names and process here.
     // with an object.
     f_.get = function(prop) {
         return function(obj) {
@@ -172,7 +95,7 @@
         };
     };
 
-    // Get a property, use it to call the iterator
+    // Get a property, use it to call the iterator.
     // Idea: use an object hash to getSet multiple properties
     f_.getSet = function(prop, iterator) {
         return function(obj) {
@@ -218,73 +141,13 @@
         };
     };
 
-    // Make a function that will call `fn` bound to the object the iterator
-    // is invoked with.
-    f_.bindFunction = function(fn) {
-        var args = _.map(_.rest(arguments), f_.functionize);
-        return function(item) {
-            return fn.apply(item, _.map(args, f_.callFunction(item)));
-        };
-    };
-
-    // Binary Method 
-    f_.bindMethod = function(method) {
-        var args = _.map(_.rest(arguments), f_.functionize);
-        return function(obj) {
-            var argVals = _.map(args, f_.callFunction(obj));
-            // Support calling method in a binary expression sense
-            if(!obj[method]) {
-                obj     = _.first(argVals);
-                argVals = _.rest(argVals);
-            }
-            return obj[method].apply(obj, argVals);
-        };
-    };
-
-    // ### Methods Iterators
-    var methods = [ 
-                        // Array
-                        'pop',
-                        'push',
-                        'reverse',
-                        'shift',
-                        'sort',
-                        'splice',
-                        'unshift',
-                        'join',
-
-                        // String
-                        'charAt',
-                        'charCodeAt',
-                        'match',
-                        'replace',
-                        'search',
-                        'split',
-                        'substr',
-                        'substring',
-                        'toLowerCase',
-                        'toUpperCase',
-
-                        // Common
-                        'concat',
-                        'indexOf',
-                        'lastIndexOf',
-                        'slice'
-                    ];
-    _.extend(f_, f_.zipObject(
-                    methods,
-                    _.map(methods, function(fn) { 
-                        return f_.partial(f_.bindMethod, fn); 
-                    })
-                 )
-            );
 
     // ### Expressions
 
     // Unary Expression Template
     f_.unaryExpr = function(expr, f_v) {
         if(f_v === undefined) {
-            f_v = f_.i;
+            f_v = _.identity;
         }
         if(_.isFunction(f_v)) {
             return function(obj) {
@@ -305,7 +168,7 @@
         // i.e. _.map([1,2], f_.add(1)) -> [2,3];
         if(f_v_r === undefined) {
             f_v_r = f_v_l;
-            f_v_l = f_.i;
+            f_v_l = _.identity;
         }
 
         if(_.isFunction(f_v_l)) {
@@ -330,6 +193,21 @@
             }
         }
     };
+
+    // Method  Expr
+    f_.methodExpr = function(method) {
+        var args = _.map(_.rest(arguments), f_.functionize);
+        return function(obj) {
+            var argVals = _.map(args, function(fn) { return fn(obj); });
+            // Support calling method in a binary expression sense
+            if(!obj[method]) {
+                obj     = _.first(argVals);
+                argVals = _.rest(argVals);
+            }
+            return obj[method].apply(obj, argVals);
+        };
+    };
+
 
     // ### Primitives
     var 
@@ -410,62 +288,71 @@
     f_.or                               = f_.partial(f_.binaryExpr, or);
     f_.xor                              = f_.partial(f_.binaryExpr, xor);
 
-    // ### Reducer Iterators
-    // May be getting the axe from 0.1
+    // ### String/Array Method Iterators
+    var methods = [ 
+                        // Array
+                        'pop',
+                        'push',
+                        'reverse',
+                        'shift',
+                        'sort',
+                        'splice',
+                        'unshift',
+                        'join',
 
-    f_.reduceExpr = function(expr, f_v) {
-        var fn;
-        if(f_v === undefined) {
-            fn = f_.i;
-        } else {
-            fn = f_.functionize(f_v);
-        }
-        return function(memo, obj) {
-            return expr(memo, fn(obj));
-        };
-    };
+                        // String
+                        'charAt',
+                        'charCodeAt',
+                        'fromCharCode',
+                        'match',
+                        'replace',
+                        'search',
+                        'split',
+                        'substr',
+                        'substring',
+                        'toLowerCase',
+                        'toUpperCase',
 
-    f_.sum      = f_.partial(f_.reduceExpr, add);
-    f_.product  = f_.partial(f_.reduceExpr, multiply);
-    f_.count    = f_.partial(f_.reduceExpr, increment);
-    f_.min      = f_.partial(f_.reduceExpr, lesserOf);
-    f_.max      = f_.partial(f_.reduceExpr, greaterOf);
+                        // Common
+                        'concat',
+                        'indexOf',
+                        'lastIndexOf',
+                        'slice'
+                    ];
+    _.extend(f_, f_.zipObject(
+                    methods,
+                    _.map(methods, function(fn) { 
+                        return f_.partial(f_.methodExpr, fn); 
+                    })
+                 )
+            );
 
-    f_.average = function(f_v) {
-        var count = 1;
-        var expr = function(l, r) {
-            var numerator   = (l * count) + r,
-                denominator = ++count;
-            return numerator / denominator;
-        };
-        return f_.reduceExpr(expr, f_v);
-    };
 
-    // Need to clean up names and process here.
+    // Chaining
+    // --------
 
-    var oneTimeStorage = {};
+    // The object we'll extend for chaining.
+    var _chainBase = {};
     _.each(_.functions(f_), function(key) {
-        oneTimeStorage[key] = function() {
-            this.stack.push(f_[key].apply(this, arguments));
+        _chainBase[key] = function() {
+            this._stack.push(f_[key].apply(this, arguments));
             return this;
         };
     });
 
-    var wrapper = function(get) {
-        var stack = [];
+    // Setup our chained iterator function.
+    var _chain = function(get) {
+        var _stack = [];
         if(get !== undefined) {
-            stack.push(f_.get(get));
+            _stack.push(f_.get(get));
         }
         var chained = function() {
-            return f_.thread(stack).apply(this, arguments);
+            return f_.thread(_stack).apply(this, arguments);
         };
-        chained.stack = stack;
-        _.extend(chained, oneTimeStorage);
-        return chained; 
+        chained._stack = _stack;
+        // Would be great to eliminate this next step.
+        // Thoughts on how this could be done more efficiently?
+        return _.extend(chained, _chainBase);
     };
-
-    // can we create a closure once that has all of the functions setup,
-    // then somehow reuse it.
-
 
 }).call(this);

@@ -2,11 +2,6 @@ $(document).ready(function() {
 
     module("f_");
 
-    test("identity", function() {
-        equals(f_.i(1), 1);
-    });
-
-    
     var f1 = function(){ return 1; },
         i = function(a) { return a; },
         add = function(a, b) { return a + b; },
@@ -25,7 +20,7 @@ $(document).ready(function() {
         deepEqual(f_.concat('#', f_.get('a'))(o), '#1');
         deepEqual(f_.concat('', f_.get('a'), '#')(o), '1#');
         deepEqual(f_.concat([], f_.get('a'), '#')(o), [1, '#']);
-        deepEqual(f_.concat([], f_.i)(o), [o]);
+        deepEqual(f_.concat([], _.identity)(o), [o]);
     });
 
     test("f_.replace", function(){
@@ -324,37 +319,12 @@ $(document).ready(function() {
         equals(f_.xor(f_.get('t'), f_.get('t'))(bools), false);
     });
 
-    test("f_.average", function() {
-        var avg = f_.average(f_.getByProperty(o));
-        equals(avg(0, 'a'),     0.5);
-        equals(avg(1, 'b'),     4/3);
-        equals(avg(1.5, 'b'),   1.625);
-        equals(_.reduce([2], f_.average()), 2);
-        equals(_.reduce([2, 2], f_.average()), 2);
-        equals(_.reduce([5,7,1,3,9,2], f_.average()), 4.5);
-    });
-
-    test("f_.count", function() {
-        var count = f_.count(f_.getByProperty(o));
-        equals(_.reduce([2,3,1,4], f_.count(), 0), 4);
-    });
-
-    test("f_.min", function() {
-        var nums = { a: 5, b: 6, c:3 },
-            min = f_.min(f_.getByProperty(nums));
-        equals(min(10,  'a'),   5);
-        equals(min(5,   'b'),   5);
-        equals(min(5,   'c'),   3);
-        equals(_.reduce([5,7,1,3,9,2], f_.min()), 1);
-    });
-
-    test("f_.max", function() {
-        var nums = { a:3, b:2, c:6 },
-            max = f_.max(f_.getByProperty(nums));
-        equals(max(0, 'a'), 3);
-        equals(max(3, 'b'), 3);
-        equals(max(3, 'c'), 6);
-        equals(_.reduce([5,7,1,3,9,2], f_.max()), 9);
+    test("f_(). chaining", function() {
+        equals(f_().get('a')(o), 1);
+        equals(f_('a')(o), 1);
+        equals(f_('a').add(1)(o), 2);
+        equals(f_('a').add(1).mul(2)(o), 4);
+        equals(f_('a').add(1).mul(2).gt(5)(o), false);
     });
 
 });

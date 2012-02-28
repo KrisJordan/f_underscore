@@ -9,6 +9,7 @@
             body { font-family: Helvetica Neue, Helvetica, Arial; }
             code { margin-left: 20px; }
             .container p { font-size: 14px; line-height: 25px; }
+            .container table td { font-size: 14px; padding: 5px 5px 5px 0; }
             .container p a { font-weight: bold; }
             pre { font-size: 12px; font-family: Monaco, Consolas, "Lucida Console", monospace; line-height: 18px; border-left: 5px solid #ccc; padding-left: 20px; margin: 0 0 20px 0; }
             span.alias { margin-left: 20px; }
@@ -53,8 +54,7 @@
     </head>
     <body>
         <div id="sidebar">
-            <a class="title" href="#top">f_underscore.js</a>
-            <a class="title" href="#top">Introduction</a>
+            <a class="title" href="#">f_underscore.js</a>
             <a class="title" href="#accessors">Accessors</a>
             <ul>
                 <li> - <a href="#get">get</a></li>
@@ -66,10 +66,10 @@
             </ul>
             <a class="title" href="#expressions">Expressions</a>
             <ul>
-                <li> - <a href="#fval">f_val parameters</a></li>
                 <li> - <a href="#unary">unary expressions</a></li>
                 <li> - <a href="#binary">binary expressions</a></li>
                 <li> - <a href="#binary">predicates</a></li>
+                <li> - <a href="#fval">f_val parameters</a></li>
             </ul>
             <a class="title" href="#equality">Equality</a>
             <ul>
@@ -110,23 +110,64 @@
             <ul>
                 <li> - <a href="#functionize">functionize</a></li>
                 <li> - <a href="#partial">partial</a></li>
-                <li> - <a href="#permute">permute</a></li>
                 <li> - <a href="#thread">thread</a></li>
                 <li> - <a href="#zipObject">zipObject</a></li>
             </ul>
+            <a class="title" href="#chaining">Chaining</a>
             <a class="title" href="#changelog">Changelog</a>
             <ul>
                 <li> - <a href="#v0.1.0">0.1.0 - 2/28/2012</a></li>
             </ul>
+            <p><br /></p><!-- hack due to css laziness -->
         </div>
         <div class="container">
-        <a name="top"></a>
-
         <h1>f_underscore.js</h1>
 
-        <p>70 some iterator function generators to complement underscore.js. It's the tie clip to go along with <a href="http://underscorejs.org">underscore.js</a>'s tie, and <a href="http://docs.jquery.com">jQuery</a>'s tux.</p>
+        <p><a href="http://github.com/KrisJordan/f_underscore">f_underscore.js</a> is a library of functions that create and compose <b>iterator functions</b>. It is designed to be used in conjunction with <a href="http://underscorejs.org">underscore.js</a>'s functions that employ iterators, functions like <a href="http://underscorejs.org/#filter">filter</a> and <a href="http://underscorejs.org/#map">map</a>. With the <b>f_underscore.js</b> library you can wield and weld <b>iterator functions</b> declaratively and dynamically. It's the tie clip to go along with <a href="http://underscorejs.org">underscore.js</a>'s tie.</p>
+        <p>The project is <a href="https://github.com/KrisJordan/f_underscore">hosted on GitHub</a> and available under the MIT license. The complete <a href="test/test.html">test suite</a> and <a href="docs/f_underscore.html">annotated source code</a> are available here.</p>
+
         <h2>Download</h2>
-        <h2><a name="top">Introduction</a></h2>
+        <p>
+        <table>
+            <tr><td><a href="">Development Version (0.1.0)</a></td><td><em>&nbsp;12kb, Uncompressed with Comments</em></td></tr>
+            <tr><td><a href="">Production Version (0.1.0)</a></td><td><em>&lt;1.5kb, Minified and Gzipped</em></td></tr>
+            <tr><td><a href="">Production w/ Underscore 1.3.1</a></td><td><em>&lt;5kb, Minified and Gzipped</em></td></tr>
+        </table>
+        <small>(Note: Depends on <a href="http://underscorejs.org">underscore.js</a>)</small>
+        </p>
+
+        <h2>Code Sampler</h2>
+        <pre>
+// Basic
+_.map([1, 2, 3], f_.multiply(3));
+=&gt; [3, 6, 9]
+_.filter([1, 2, 3], f_.greaterThan(2));
+=&gt; [3]
+_.sortBy([{name : 'moe'}, {name : 'larry'}, {name : 'curly'}], f_.get('name'));
+=&gt; [{name : 'curly'}, {name : 'larry'}, {name : 'moe'}]
+
+// Chaining
+_.filter([1, 2, 3, 4, 5, 6], f_().modulo(2).isEqual(0));
+=&gt; [2, 4, 6]
+var stooges = [{name : 'moe'}, {name : 'larry'}, {name : 'curly'}];
+_.map(stooges, f_().get('name').substr(0,1).toUpperCase());
+=&gt; ['M', 'L', 'C']
+
+// Composition
+var data =          [ {name : 'Diane', age : 21, sex : 'f'},
+                      {name : 'Jack',  age : 20, sex : 'm'},
+                      {name : 'Moe',   age : 40, sex : 'm'} ];
+var userCriteria =  [ [ 'sex', 'isEqual',     'm' ],
+                      [ 'age', 'greaterThan', 20  ] ];
+var filterFn  = _.reduce(userCriteria,
+                        function(memo, rule) {
+                            var prop = rule[0], expr = rule[1], val = rule[2];
+                            return f_.and(memo, f_[expr](f_.get(prop), val));
+                        }, true);
+_.filter(data, filterFn);
+=&gt; [{name : 'Moe',  age : 40, sex : 'm'}]
+</pre>
+
         <h2><a name="accessors">Accessors</a></h2>
         
         <p><a class="function" name="get">get</a> <code>f_.get(property) =&gt; iterator(object)</code><br />
@@ -202,9 +243,29 @@ _.map(['assists', 'turnovers'], reset);
             </p>
 
         <h2><a name="expressions">Expressions</a></h2>
-        
+
+        <p><a class="function" name="unary">unary expressions</a> <code>f_.<em>unaryExpr</em>([f_val]) =&gt; iterator(item)</code><br />
+        Unary expressions have an optional <a href="#fval">f_val</a> parameter. If <b>f_val</b> is not provided it defaults to the <a href="http://underscorejs.org/#identity">identity</a> function. Unary functions in f_underscore.js include <a href="#increment">increment</a>, <a href="#decrement">decrement</a>, <a href="#square">square</a>, <a href="#negate">negate</a>, and <a href="#not">not</a>.
+        <pre>
+_.map([1, 2, 3], f_.negate())
+=&gt; [-1, -2, -3]
+_.map([{a : 1}, {a : 2}, {a : 3}], f_.negate(f_.get('a')));
+=&gt; [-1, -2, -3]
+</pre>
+        <p><a class="function" name="binary">binary exprs</a> <code>f_.<em>binaryExpr</em>([f_val_left,] f_val_right) =&gt; iterator(item)</code><br />
+        Binary expressions have an optional <a href="#fval">f_val_left</a>. When <a href="#fval">f_val_left</a> is not provided it defaults to the <a href="#identity">identity</a> function. Binary functions in f_underscore.js include <a href="#isEqual">isEqual</a>, <a href="#isNotEqual">isNotEqual</a>, <a href="#greaterThan">greaterThan</a>, <a href="#atLeast">atLeast</a>, <a href="#lessThan">lessThan</a>, <a href="#atMost">atMost</a>, <a href="#and">and</a>, <a href="#neither">neither</a>, <a href="#or">or</a>, <a href="#xor">xor</a>, <a href="#add">add</a>, <a href="#subtract">subtract</a>, <a href="#multiply">multiply</a>, <a href="#divide">divide</a>, <a href="#modulo">modulo</a>, <a href="#append">append</a>, and <a href="#prepend">prepend</a>.
+        </p>
+        <pre>
+_.map([1, 2, 3], f_.multiply(3))
+=&gt; [3, 6, 9]
+_.map([{a : 1, b : 2}, {a : 2, b : 4}], f_.multiply(f_.get('a'), f_.get('b')));
+=&gt; [2, 4]
+</pre>
+        <p><a class="function" name="predicate">predicate 'truth test' iterators</a> <code>f_.<em>expr</em>() =&gt; predicate(item) =&gt; boolean</code><br />
+        Truth test iterator functions, or predicates, are returned by f_underscore.js functions <a href="#not">not</a>, <a href="#isEqual">isEqual</a>, <a href="#isNotEqual">isNotEqual</a>, <a href="#greaterThan">greaterThan</a>, <a href="#atLeast">atLeast</a>, <a href="#lessThan">lessThan</a>, <a href="#atMost">atMost</a>, <a href="#and">and</a>, <a href="#neither">neither</a>, <a href="#or">or</a>, and <a href="#xor">xor</a>. Predicate iterators will always return true or false. They're handy when paired with <a href="http://underscorejs.org/">underscore.js</a> functions such as <a href="http://underscorejs.org/#find">_.find</a>, <a href="http://underscorejs.org/#filter">_.filter</a>, <a href="http://underscorejs.org/#find">_.reject</a>, <a href="http://underscorejs.org/#all">_.all</a>, and <a href="http://underscorejs.org/#any">_.any</a>. 
+
         <p><a class="function" name="fval">f_val parameters</a> - "function or value"<br />
-        Many functions have parameters named <b>f_val</b> or <b>f_val_<em>suffix</em></b>. These  are used and closed over by the <b>iterator</b> functions f_underscore.js creates. These parameters accept any value, including functions. When <b>f_val</b> is a function, it is evaluated at the time the <b>iterator</b> function is called, being passed a the <b>iterator</b>'s <b>item</b>. It is an iterator called recursively within an iterator. This enables us to nest f_underscore.js function calls anywhere an <b>f_val</b> is expected.
+        Most f_underscore.js functions have parameters named <b>f_val</b> or <b>f_val_<em>suffix</em></b>. These  are used and closed over by the <b>iterators</b> f_underscore.js creates. These parameters accept any value, including functions. When <b>f_val</b> is a function, it is evaluated at the time the <b>iterator</b> function is called, being passed the <b>iterator</b>'s <b>item</b>. It is an iterator called recursively within an iterator. This enables us to nest f_underscore.js function calls anywhere an <b>f_val</b> is expected.
         </p>
         <pre>
 var plus1 = function(f_val) {
@@ -227,26 +288,6 @@ var aPlus1_idiomatic = plus1(f_.get('a'));
 aPlus1_idiomatic({a:10});
 =&gt; 11
 </pre>
-
-        <p><a class="function" name="unary">unary expressions</a> <code>f_.<em>unaryExpr</em>([f_val]) =&gt; iterator(item)</code><br />
-        Unary expressions have an optional <b>f_val</b> parameter. If <b>f_val</b> is not provided it defaults to the <a href="#identity">identity</a> function. Unary functions in f_underscore.js include <a href="#increment">increment</a>, <a href="#decrement">decrement</a>, <a href="#square">square</a>, <a href="#negate">negate</a>, and <a href="#not">not</a>.
-        <pre>
-_.map([1, 2, 3], f_.negate())
-=&gt; [-1, -2, -3]
-_.map([{a : 1}, {a : 2}, {a : 3}], f_.negate(f_.get('a')));
-=&gt; [-1, -2, -3]
-</pre>
-        <p><a class="function" name="binary">binary exprs</a> <code>f_.<em>binaryExpr</em>([f_val_left,] f_val_right) =&gt; iterator(item)</code><br />
-        Binary expressions have an optional <b>f_val_left</b>. When <b>f_val_left</b> is not provided it defaults to the <a href="#identity">identity</a> function. Binary functions in f_underscore.js include <a href="#isEqual">isEqual</a>, <a href="#isNotEqual">isNotEqual</a>, <a href="#greaterThan">greaterThan</a>, <a href="#atLeast">atLeast</a>, <a href="#lessThan">lessThan</a>, <a href="#atMost">atMost</a>, <a href="#and">and</a>, <a href="#neither">neither</a>, <a href="#or">or</a>, <a href="#xor">xor</a>, <a href="#add">add</a>, <a href="#subtract">subtract</a>, <a href="#multiply">multiply</a>, <a href="#divide">divide</a>, <a href="#modulo">modulo</a>, <a href="#append">append</a>, and <a href="#prepend">prepend</a>.
-        </p>
-        <pre>
-_.map([1, 2, 3], f_.multiply(3))
-=&gt; [3, 6, 9]
-_.map([{a : 1, b : 2}, {a : 2, b : 4}], f_.multiply(f_.get('a'), f_.get('b')));
-=&gt; [2, 4]
-</pre>
-        <p><a class="function" name="predicate">predicate 'truth test' iterators</a> <code>f_.<em>expr</em>() =&gt; predicate(item) =&gt; boolean</code><br />
-        Truth test iterator functions, or predicates, are returned by f_underscore.js functions <a href="#not">not</a>, <a href="#isEqual">isEqual</a>, <a href="#isNotEqual">isNotEqual</a>, <a href="#greaterThan">greaterThan</a>, <a href="#atLeast">atLeast</a>, <a href="#lessThan">lessThan</a>, <a href="#atMost">atMost</a>, <a href="#and">and</a>, <a href="#neither">neither</a>, <a href="#or">or</a>, and <a href="#xor">xor</a>. They're handy when paired with <a href="http://underscorejs.org/">underscore.js</a> functions such as <a href="http://underscorejs.org/#find">_.find</a>, <a href="http://underscorejs.org/#filter">_.filter</a>, <a href="http://underscorejs.org/#find">_.reject</a>, <a href="http://underscorejs.org/#all">_.all</a>, and <a href="http://underscorejs.org/#any">_.any</a>. 
         </p>
         <pre>
 _.filter([3, 1, 2], f_.lessThan(2))
@@ -508,8 +549,8 @@ _.map(stooges, f_.neg(f_.get('age')));
 </pre>
         
         <h2><a name="string-method">String Methods</a></h2>
-        <p><code>f_.<em>stringMethod</em>([f_val_string,] [f_val_arg, ...]) =&gt; iterator(item|string)</code></p>
-        <p>The f_underscore.js API aliases String's native methods to create simple, concise string manipulation iterators. The first argument to string methods is an optional <a href="#fval">f_val</a> that should return the string the method will be applied to if the iterator is called with a non-string. Subsequent arguments follow the same signature as you would pass to the method itself. String methods include: <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/charAt">charAt</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/charCodeAt">charCodeAt</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/concat">concat</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/indexOf">indexOf</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/lastIndexOf">lastIndexOf</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/match">match</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/replace">replace</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/search">search</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/slice">slice</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/split">split</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/substr">substr</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/substring">substring</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/toLowerCase">toLowerCase</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/toUpperCase">toUpperCase</a>.
+        <p><code>f_.<em>stringMethod</em>([f_val_string,] [*f_val_argument]) =&gt; iterator(item|string)</code></p>
+        <p>The f_underscore.js API aliases String's native methods to create simple, concise string manipulation iterators. The first argument to string methods is an optional <a href="#fval">f_val</a> that should return the string the method will be applied to if the iterator is called with a non-string. Subsequent arguments follow the same signature as you would pass to the method itself. String methods include: <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/charAt">charAt</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/charCodeAt">charCodeAt</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/concat">concat</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/fromCharCode">fromCharCode</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/indexOf">indexOf</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/lastIndexOf">lastIndexOf</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/match">match</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/replace">replace</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/search">search</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/slice">slice</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/split">split</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/substr">substr</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/substring">substring</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/toLowerCase">toLowerCase</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/toUpperCase">toUpperCase</a>.
         </p>
         <pre>
 var toUpper = f_.toUpperCase();
@@ -530,28 +571,86 @@ replaceSpacesInName({name:'l a r r y'});
 </pre>
         
         <h2><a name="array-method">Array Methods</a></h2>
-        <p><code>f_.<em>arrayMethod</em>([f_val_string,] ...) =&gt; iterator(item|string)</code></p>
+        <p><code>f_.<em>arrayMethod</em>([f_val_string,] [*f_val_argument]) =&gt; iterator(item|string)</code></p>
         <p>The f_underscore.js API aliases Array's native methods to create simple, concise array manipulation iterators. The first argument to string methods is an optional <a href="#fval">f_val</a> that should return the string the method will be applied to if the iterator is called with a non-string. Subsequent arguments follow the same signature as you would pass to the method itself. Array methods include: <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/concat">concat</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/indexOf">indexOf</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/join">join</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/lastIndexOf">lastIndexOf</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/pop">pop</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/push">push</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/reverse">reverse</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/shift">shift</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/slice">slice</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/sort">sort</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/splice">splice</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/unshift">unshift</a>.
         <pre>
-var parts = [ ['test', 'path'], ['next', 'path', 'here'] ];
-_.map(parts, f_.join('/'));
-=&gt; ['test/path', 'next/path/here'];
+var joinBySlash = f_.join('/');
+joinBySlash(['a','sample','path']);
+=&gt; 'a/sample/path'
 </pre>
 
         <h2><a name="utility">Utility Functions</a></h2>
         
-            <p><a class="function" name="functionize">functionize</a>
+            <p><a class="function" name="functionize">functionize</a> <code>f_.functionize(value) =&gt; iterator(item) =&gt; value</code><br />
+            If <b>value</b> is not a function, create and return an iterator that returns <b>value</b> when called, else return the <b>value</b> function.
 			</p>
-            <p><a class="function" name="partial">partial</a>
+        <pre>
+var aStringFn = f_.functionize('aString');
+aStringFn();
+=&gt; 'aString'
+var anotherStringFn = f_.functionize(aStringFn);
+anotherStringFn();
+=&gt; 'aString'
+aStringFn === anotherStringFn
+=&gt; true
+</pre>
+            <p><a class="function" name="partial">partial</a> <code>f_.partial(function, [*arguments])</code><br />
+            Partial application of <b>function</b> that creates and returns a new function that calls <b>function</b> with the given <b>arguments</b> prefilled. Like underscore.js's <a href="http://underscorejs.org">bind</a>, except does not specify context.
 			</p>
-            <p><a class="function" name="permute">permute</a>
+            <pre>
+var logMessage = function(label, message) {
+    console.log(label + ": " + message);
+}
+logMessage("Warning", "Example message.");
+=&gt; "Warning: Example message."
+
+var logWarning = f_.partial(logMessage, "Warning");
+logWarning("Another example message.");
+=&gt; "Warning: Another example message."
+</pre>
+
+            <p><a class="function" name="thread">thread</a> <code>f_.thread(*functions|functionArray) =&gt; iterator(item)</code><br />
+            Given many <b>functions</b> provided as arguments, or a single array of <b>functions</b>, returns an iterator that will call each function in succession. The first function will be called with <b>item</b>. Each function thereafter will be called with the return value of the previous function called. The <b>thread</b> function is similar to <a href="http://underscorejs.org">_.compose</a> except that thread calls <b>functions</b> in the same order they are passed. The <a href="#chaining">chaining</a> functionality in f_underscore.js relies on threading.
 			</p>
-            <p><a class="function" name="thread">thread</a>
+            <pre>
+var canWithdraw20Dollars = f_.thread(
+                f_.get('balance'),
+                f_.subtract(20),
+                f_.greaterThan(0)
+             );
+canWithdraw20Dollars({name: 'moe', balance: 15});
+=&gt; false
+canWithdraw20Dollars({name: 'curly', balance: 25});
+=&gt; true
+</pre>
+            <p><a class="function" name="zipObject">zipObject</a> <code>f_.zipObject(keysArray,valuesArray) =&gt; object</code><br />
+            Given two arrays of same length, one with strings/keys, the other with values, 
+            return an object comprised of the keys and values.
 			</p>
-            <p><a class="function" name="zipObject">zipObject</a>
-			</p>
-        
+            <pre>
+f_.zipObject(['a','b'], [1, 2]);
+=&gt; {a : 1, b : 2}
+</pre>
+
+        <h2><a name="chaining">Chaining</a></h2>
+        <p><code>f_([propertyName])<em>.function().function()...</em> =&gt; iterator(item)</code></p>
+        <p>The chaining API provides a concise, readable means for constructing iterator functions. Chaining begins by calling <b>f_</b> as a function. If the optional <b>propertyName</b> is provided, the first chained call is <b>get(propertyName)</b>. Calls can be chained to any f_underscore function thereafter. The chained iterators are queued onto an array. When the resulting <b>iterator</b> is called with an <b>item</b> the first chained iterator is called with <b>item</b>. Each chained iterator thereafter is called with the return value of the previous one. Chaining provides a fluent interface around the <a href="#thread">f_.thread</a> function.</p>
+            <pre>
+var canWithdraw20Dollars = f_().get('balance').subtract(20).greaterThan(0);
+
+canWithdraw20Dollars({name: 'moe', balance: 15});
+=&gt; false
+canWithdraw20Dollars({name: 'curly', balance: 25});
+=&gt; true
+
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+_.filter(stooges, f_('age').gt(40));
+=&gt; [{name : 'larry', age : 50}, {name : 'curly', age : 60}]
+</pre>
         <h2><a name="changelog">Changelog</a></h2>
+        <p><a class="function" name="v0.1.0">v0.1.0 - 2/28/2012</a><br />
+        Initial release of f_underscore.js.
+        </p>
     </div>
     <script type="text/javascript" src="test/vendor/underscore.js"></script>
     <script type="text/javascript" src="f_underscore.js"></script>

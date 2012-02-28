@@ -1,1 +1,1 @@
-module.exports = require('./f_underscore');
+module.exports = require('./f_underscore').f_;
