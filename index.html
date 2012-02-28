@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>f_underscore.js - an iterator function library</title>
+        <style>
+
+            a, a:visited { color: black; }
+            a.function { font-size: 16px; }
+            body { font-family: Helvetica Neue, Helvetica, Arial; }
+            code { margin-left: 20px; }
+            .container p { font-size: 14px; line-height: 25px; }
+            .container table td { font-size: 14px; padding: 5px 5px 5px 0; }
+            .container p a { font-weight: bold; }
+            pre { font-size: 12px; font-family: Monaco, Consolas, "Lucida Console", monospace; line-height: 18px; border-left: 5px solid #ccc; padding-left: 20px; margin: 0 0 20px 0; }
+            span.alias { margin-left: 20px; }
+
+            div#sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: 150px;
+                overflow-y: auto;
+                overflow-x: hidden;
+                border-right: 5px solid gray;
+                background: white;
+                display: block;
+            }
+            div#sidebar ul {
+                font-size: 12px;
+                line-height: 18px;
+                margin: 0 0 0 20px;
+                list-style: none;
+                padding-left: 0;
+                text-indent: 0;
+            }
+            div#sidebar ul a {
+                text-decoration: none;
+            }
+            div#sidebar ul ul {
+                list-style-type: dash;
+            }
+            div#sidebar .title {
+                font-weight: bold;
+                display: block;
+                margin:  10px 0 10px 20px; 
+            }
+            div.container {
+                width: 650px;
+                margin: 40px 0 50px 175px;
+                display: block;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="sidebar">
+            <a class="title" href="#">f_underscore.js</a>
+            <a class="title" href="#accessors">Accessors</a>
+            <ul>
+                <li> - <a href="#get">get</a></li>
+                <li> - <a href="#getByProperty">getByProperty</a></li>
+                <li> - <a href="#project">project</a></li>
+                <li> - <a href="#getSet">getSet</a></li>
+                <li> - <a href="#set">set</a></li>
+                <li> - <a href="#setByProperty">setByProperty</a></li>
+            </ul>
+            <a class="title" href="#expressions">Expressions</a>
+            <ul>
+                <li> - <a href="#unary">unary expressions</a></li>
+                <li> - <a href="#binary">binary expressions</a></li>
+                <li> - <a href="#binary">predicates</a></li>
+                <li> - <a href="#fval">f_val parameters</a></li>
+            </ul>
+            <a class="title" href="#equality">Equality</a>
+            <ul>
+                <li> - <a href="#isEqual">isEqual</a></li>
+                <li> - <a href="#isNotEqual">isNotEqual</a></li>
+            </ul>
+            <a class="title" href="#relational">Relational</a>
+            <ul>
+                <li> - <a href="#greaterThan">greaterThan</a></li>
+                <li> - <a href="#atLeast">atLeast</a></li>
+                <li> - <a href="#lessThan">lessThan</a></li>
+                <li> - <a href="#atMost">atMost</a></li>
+            </ul>
+            <a class="title" href="#logical">Logical</a>
+            <ul>
+                <li> - <a href="#and">and</a></li>
+                <li> - <a href="#neither">neither</a></li>
+                <li> - <a href="#or">or</a></li>
+                <li> - <a href="#xor">xor</a></li>
+                <li> - <a href="#not">not</a></li>
+                <li> - <a href="#ternary">ternary</a></li>
+            </ul>
+            <a class="title" href="#arithmetic">Arithmetic</a>
+            <ul>
+                <li> - <a href="#add">add</a></li>
+                <li> - <a href="#subtract">subtract</a></li>
+                <li> - <a href="#multiply">multiply</a></li>
+                <li> - <a href="#divide">divide</a></li>
+                <li> - <a href="#modulo">modulo</a></li>
+                <li> - <a href="#increment">increment</a></li>
+                <li> - <a href="#decrement">decrement</a></li>
+                <li> - <a href="#square">square</a></li>
+                <li> - <a href="#negate">negate</a></li>
+            </ul>
+            <a class="title" href="#string-method">String Methods</a>
+            <a class="title" href="#array-method">Array Methods</a>
+            <a class="title" href="#utility">Utility Functions</a>
+            <ul>
+                <li> - <a href="#functionize">functionize</a></li>
+                <li> - <a href="#partial">partial</a></li>
+                <li> - <a href="#thread">thread</a></li>
+                <li> - <a href="#zipObject">zipObject</a></li>
+            </ul>
+            <a class="title" href="#chaining">Chaining</a>
+            <a class="title" href="#changelog">Changelog</a>
+            <ul>
+                <li> - <a href="#v0.1.0">0.1.0 - 2/28/2012</a></li>
+            </ul>
+            <p><br /></p><!-- hack due to css laziness -->
+        </div>
+        <div class="container">
+        <h1>f_underscore.js</h1>
+
+        <p><a href="http://github.com/KrisJordan/f_underscore">f_underscore.js</a> is a library of functions that create and compose <b>iterator functions</b>. It is designed to be used in conjunction with <a href="http://underscorejs.org">underscore.js</a>'s functions that employ iterators, functions like <a href="http://underscorejs.org/#filter">filter</a> and <a href="http://underscorejs.org/#map">map</a>. With the <b>f_underscore.js</b> library you can wield and weld <b>iterator functions</b> declaratively and dynamically. It's the tie clip to go along with <a href="http://underscorejs.org">underscore.js</a>'s tie.</p>
+        <p>The project is <a href="https://github.com/KrisJordan/f_underscore">hosted on GitHub</a> and available under the MIT license. The complete <a href="test/test.html">test suite</a> and <a href="docs/f_underscore.html">annotated source code</a> are available here.</p>
+
+        <h2>Download</h2>
+        <p>
+        <table>
+            <tr><td><a href="f_underscore.js">Development Version (0.1.0)</a></td><td><em>&nbsp;12kb, Uncompressed with Comments</em></td></tr>
+            <tr><td><a href="f_underscore-min.js">Production Version (0.1.0)</a></td><td><em>&lt;1.5kb, Minified and Gzipped</em></td></tr>
+            <tr><td><a href="f_underscore-bundle-min.js">Production w/ Underscore 1.3.1</a></td><td><em>&lt;5kb, Minified and Gzipped</em></td></tr>
+        </table>
+        <small>(Note: Depends on <a href="http://underscorejs.org">underscore.js</a>)</small>
+        </p>
+
+        <h2>Code Sampler</h2>
+        <pre>
+// Basic
+_.map([1, 2, 3], f_.multiply(3));
+=&gt; [3, 6, 9]
+_.filter([1, 2, 3], f_.greaterThan(2));
+=&gt; [3]
+_.sortBy([{name : 'moe'}, {name : 'larry'}, {name : 'curly'}], f_.get('name'));
+=&gt; [{name : 'curly'}, {name : 'larry'}, {name : 'moe'}]
+
+// Chaining
+_.filter([1, 2, 3, 4, 5, 6], f_().modulo(2).isEqual(0));
+=&gt; [2, 4, 6]
+var stooges = [{name : 'moe'}, {name : 'larry'}, {name : 'curly'}];
+_.map(stooges, f_().get('name').substr(0,1).toUpperCase());
+=&gt; ['M', 'L', 'C']
+
+// Composition
+var data =          [ {name : 'Diane', age : 21, sex : 'f'},
+                      {name : 'Jack',  age : 20, sex : 'm'},
+                      {name : 'Moe',   age : 40, sex : 'm'} ];
+var userCriteria =  [ [ 'sex', 'isEqual',     'm' ],
+                      [ 'age', 'greaterThan', 20  ] ];
+var filterFn  = _.reduce(userCriteria,
+                        function(memo, rule) {
+                            var prop = rule[0], expr = rule[1], val = rule[2];
+                            return f_.and(memo, f_[expr](f_.get(prop), val));
+                        }, true);
+_.filter(data, filterFn);
+=&gt; [{name : 'Moe',  age : 40, sex : 'm'}]
+</pre>
+
+        <h2><a name="accessors">Accessors</a></h2>
+        
+        <p><a class="function" name="get">get</a> <code>f_.get(property) =&gt; iterator(object)</code><br />
+        Returns an <b>iterator</b> function that will return the value of <b>object[property]</b> when called.
+        </p>
+        <pre>
+var getter = f_.get('flavor');
+getter({flavor : 'Vanilla', size : 'Large'});
+=&gt; 'Vanilla'
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+_.map(stooges, f_.get('name'));
+=&gt; ['moe', 'larry', 'curly']
+_.map(stooges, f_.toUpperCase(f_.get('name')));
+=&gt; ['MOE', 'LARRY', 'CURLY']
+</pre>
+
+        <p><a class="function" name="getByProperty">getByProperty</a> <code>f_.getByProperty(object) =&gt; iterator(property)</code><br />
+        Returns an <b>iterator</b> function that will return the value of <b>object[property]</b> when called.
+        </p>
+        <pre>
+var iceCream = {flavor : 'Vanilla', size : 'Large', cone : 'Waffle'};
+var getProperty = f_.getByProperty(iceCream);
+getProperty('flavor');
+=&gt; 'Vanilla'
+_.map(['cone', 'flavor'], f_.getByProperty(iceCream));
+=&gt; ['Waffle', 'Vanilla']
+</pre>
+
+            <p><a class="function" name="project">project</a> <code>f_.project(propertyNameArray) =&gt; iterator(object)</code><br />
+            Returns an <b>iterator</b> function that will create and return a new object with properties in the <b>propertyNameArray</b> whose values are copied from <b>object</b>.
+            </p>
+        <pre>
+var iceCream = {flavor : 'Vanilla', size : 'Large', cone : 'Waffle'};
+var projectFn = f_.project(['cone', 'flavor']);
+projectFn(iceCream);
+=&gt; {cone : 'Waffle', flavor : 'Vanilla'}
+</pre>
+
+            <p><a class="function" name="getSet">getSet</a> <code>f_.getSet(property, fn) =&gt; iterator(object)</code><br />
+            Returns an <b>iterator</b> function that will set <b>object[property]</b> to the return value of <b>fn(object[property])</b> and then returns <b>object</b>.
+        <pre>
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+var incrementAge = f_.getSet('age', function(ageVal) { return ageVal + 1; });
+incrementAge(stooges[0]);
+=&gt; {name : 'moe', age : 41}
+_.map(stooges, f_.getSet('age', f_.incr()));
+=&gt; [{name : 'moe', age : 42}, {name : 'larry', age : 51}, {name : 'curly', age : 61}]
+</pre>
+
+        <p><a class="function" name="set">set</a> <code>f_.set(property, f_val) =&gt; iterator(object)</code><br />
+        Returns an <b>iterator</b> function that will set the value of <b>object[property]</b> to the evaluation of <b>f_val</b> and then returns <b>object</b>. 
+        </p>
+        <pre>
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+var setter = f_.set('age', 41);
+setter(stooges[0]);
+=&gt; {name : 'moe', age : 41}
+_.map(stooges, f_.set('age', f_.incr(f_.get('age'))));
+=&gt; [{name : 'moe', age : 42}, {name : 'larry', age : 51}, {name : 'curly', age : 61}]
+</pre>
+
+        <p><a class="function" name="setByProperty">setByProperty</a> <code>f_.setByProperty(object, f_val) =&gt; iterator(property)</code><br />
+        Returns an <b>iterator</b> function that will set the value of <b>object[property]</b> to the evaluation of <b>f_val</b>. The resulting <b>iterator</b> will return <b>object</b>. 
+        </p>
+        <pre>
+var player = {name : 'Kendall Marshall', points : 22, assists : 13, turnovers: 1};
+var reset = f_.setByProperty(player, 0);
+reset('points');
+=&gt; {name : 'Kendall Marshall', points : 0, assists : 13, turnovers: 1}
+_.map(['assists', 'turnovers'], reset);
+=&gt; {name : 'Kendall Marshall', points : 0, assists : 0, turnovers: 0}
+</pre>
+            </p>
+
+        <h2><a name="expressions">Expressions</a></h2>
+
+        <p><a class="function" name="unary">unary expressions</a> <code>f_.<em>unaryExpr</em>([f_val]) =&gt; iterator(item)</code><br />
+        Unary expressions have an optional <a href="#fval">f_val</a> parameter. If <b>f_val</b> is not provided it defaults to the <a href="http://underscorejs.org/#identity">identity</a> function. Unary functions in f_underscore.js include <a href="#increment">increment</a>, <a href="#decrement">decrement</a>, <a href="#square">square</a>, <a href="#negate">negate</a>, and <a href="#not">not</a>.
+        <pre>
+_.map([1, 2, 3], f_.negate())
+=&gt; [-1, -2, -3]
+_.map([{a : 1}, {a : 2}, {a : 3}], f_.negate(f_.get('a')));
+=&gt; [-1, -2, -3]
+</pre>
+        <p><a class="function" name="binary">binary exprs</a> <code>f_.<em>binaryExpr</em>([f_val_left,] f_val_right) =&gt; iterator(item)</code><br />
+        Binary expressions have an optional <a href="#fval">f_val_left</a>. When <a href="#fval">f_val_left</a> is not provided it defaults to the <a href="#identity">identity</a> function. Binary functions in f_underscore.js include <a href="#isEqual">isEqual</a>, <a href="#isNotEqual">isNotEqual</a>, <a href="#greaterThan">greaterThan</a>, <a href="#atLeast">atLeast</a>, <a href="#lessThan">lessThan</a>, <a href="#atMost">atMost</a>, <a href="#and">and</a>, <a href="#neither">neither</a>, <a href="#or">or</a>, <a href="#xor">xor</a>, <a href="#add">add</a>, <a href="#subtract">subtract</a>, <a href="#multiply">multiply</a>, <a href="#divide">divide</a>, <a href="#modulo">modulo</a>, <a href="#append">append</a>, and <a href="#prepend">prepend</a>.
+        </p>
+        <pre>
+_.map([1, 2, 3], f_.multiply(3))
+=&gt; [3, 6, 9]
+_.map([{a : 1, b : 2}, {a : 2, b : 4}], f_.multiply(f_.get('a'), f_.get('b')));
+=&gt; [2, 4]
+</pre>
+        <p><a class="function" name="predicate">predicate 'truth test' iterators</a> <code>f_.<em>expr</em>() =&gt; predicate(item) =&gt; boolean</code><br />
+        Truth test iterator functions, or predicates, are returned by f_underscore.js functions <a href="#not">not</a>, <a href="#isEqual">isEqual</a>, <a href="#isNotEqual">isNotEqual</a>, <a href="#greaterThan">greaterThan</a>, <a href="#atLeast">atLeast</a>, <a href="#lessThan">lessThan</a>, <a href="#atMost">atMost</a>, <a href="#and">and</a>, <a href="#neither">neither</a>, <a href="#or">or</a>, and <a href="#xor">xor</a>. Predicate iterators will always return true or false. They're handy when paired with <a href="http://underscorejs.org/">underscore.js</a> functions such as <a href="http://underscorejs.org/#find">_.find</a>, <a href="http://underscorejs.org/#filter">_.filter</a>, <a href="http://underscorejs.org/#find">_.reject</a>, <a href="http://underscorejs.org/#all">_.all</a>, and <a href="http://underscorejs.org/#any">_.any</a>. 
+
+        <p><a class="function" name="fval">f_val parameters</a> - "function or value"<br />
+        Most f_underscore.js functions have parameters named <b>f_val</b> or <b>f_val_<em>suffix</em></b>. These  are used and closed over by the <b>iterators</b> f_underscore.js creates. These parameters accept any value, including functions. When <b>f_val</b> is a function, it is evaluated at the time the <b>iterator</b> function is called, being passed the <b>iterator</b>'s <b>item</b>. It is an iterator called recursively within an iterator. This enables us to nest f_underscore.js function calls anywhere an <b>f_val</b> is expected.
+        </p>
+        <pre>
+var plus1 = function(f_val) {
+    var iterator = function(item) {
+        if(_.isFunction(f_val) {
+            return f_val(item) + 1;
+        } else {
+            return f_val + 1;
+        }
+    };
+    return iterator;
+};
+var plus1and1 = plus1(1);
+plus1and1();
+=&gt; 2
+var aPlus1 = plus1(function(item) { return item.a; });
+aPlus1({a:10});
+=&gt; 11
+var aPlus1_idiomatic = plus1(f_.get('a'));
+aPlus1_idiomatic({a:10});
+=&gt; 11
+</pre>
+        </p>
+        <pre>
+_.filter([3, 1, 2], f_.lessThan(2))
+=&gt; [1]
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+_.filter(stooges, f_.isEqual(f_.get('age'), 50));
+=&gt; [{name : 'larry', age : 50}]
+</pre>
+
+        <h2><a name="equality">Equality</a></h2>
+        
+            <p><a class="function" name="isEqual">isEqual</a> <code>f_.isEqual([f_val_L,] f_val_R) =&gt; predicate(item)</code> <span class="alias">Alias: <b>eq</b></span><br />
+            Deep equality test comparing left and right <a href="#fval">f_vals</a>. <b>isEqual</b> is a <a href="#binary">binary expression</a> that creates and returns a <a href="#predicate">predicate</a> iterator function. Uses <a href="http://underscorejs.org/#isEqual">_.isEqual</a> to perform the deep equality comparison.
+            </p>
+        <pre>
+var isEqualTo3 = f_.isEqual(3);
+isEqualTo3(1);
+=&gt; false
+_.filter([1, 2, 3], f_.eq(3));
+=&gt; [3]
+
+var nameIsCurly = f_.isEqual(f_.get('name'), 'curly');
+nameIsCurly({name : 'moe'});
+=&gt; false
+_.filter([{name : 'moe'}, {name : 'larry'}, {name : 'curly'}], nameIsCurly);
+=&gt; [{name : 'curly'}]
+</pre>
+
+            <p><a class="function" name="isNotEqual">isNotEqual</a> <code>f_.isNotEqual([f_val_L,] f_val_R) =&gt; predicate(item)</code> <span class="alias">Alias: <b>neq</b></span><br />
+            Deep inequality test comparing left and right <a href="#fval">f_vals</a>. <b>isEqual</b> is a <a href="#binary">binary expression</a> that creates and returns a <a href="#predicate">predicate</a> iterator function. Uses <a href="http://underscorejs.org/#isEqual">_.isEqual</a> to perform the deep equality comparison.
+            </p>
+        <pre>
+var isNotEqualTo3 = f_.isNotEqual(3);
+isNotEqualTo3(1);
+=&gt; true 
+_.filter([1, 2, 3], f_.neq(3));
+=&gt; [1, 2]
+
+var nameIsNotCurly = f_.isNotEqual(f_.get('name'), 'curly');
+nameIsNotCurly({name : 'moe'});
+=&gt; true
+_.filter([{name : 'moe'}, {name : 'larry'}, {name : 'curly'}], nameIsNotCurly);
+=&gt; [{name : 'moe'}, {name : 'larry'}]
+</pre>
+        
+        <h2><a name="relational">Relational</a></h2>
+        
+            <p><a class="function" name="greaterThan">greaterThan</a> <code>f_.greaterThan([f_val_L,] f_val_R) =&gt; predicate(item)</code> <span class="alias">Alias: <b>gt</b></span><br />
+            Greater than test comparing left and right <a href="#fval">f_vals</a>. It is a <a href="#binary">binary expression</a> that creates and returns a <a href="#predicate">predicate</a> iterator function.
+			</p>
+        <pre>
+var greaterThan2 = f_.greaterThan(2);
+greaterThan2(2);
+=&gt; false
+_.filter([1, 2, 3], f_.gt(2));
+=&gt; [3]
+
+var olderThan40 = f_.greaterThan(f_.get('age'), 40);
+olderThan40({ name : 'moe', age : 40});
+=&gt; false 
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+_.filter(stooges, olderThan40);
+=&gt; [{name : 'larry', age : 50}, {name : 'curly', age : 60}]
+</pre>
+            <p><a class="function" name="atLeast">atLeast</a> <code>f_.atLeast([f_val_L,] f_val_R) =&gt; predicate(item)</code> <span class="alias">Alias: <b>gte</b></span><br />
+            At least is a greater than or equal to test comparing left and right <a href="#fval">f_vals</a>. It is a <a href="#binary">binary expression</a> that creates and returns a <a href="#predicate">predicate</a> iterator function.
+			</p>
+        <pre>
+var atLeast2 = f_.atLeast(2);
+atLeast2(2);
+=&gt; true
+_.filter([1, 2, 3], f_.gte(2));
+=&gt; [2, 3]
+
+var atLeast50 = _.atLeast(f_.get('age'), 50);
+atLeast50({name : 'moe', age : 40});
+=&gt; false 
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+_.filter(stooges, atLeast50);
+=&gt; [{name : 'larry', age : 50}, {name : 'curly', age : 60}]
+</pre>
+            <p><a class="function" name="lessThan">lessThan</a> <code>f_.lessThan([f_val_L,] f_val_R) =&gt; predicate(item)</code> <span class="alias">Alias: <b>lt</b></span><br />
+            Greater than test comparing left and right <a href="#fval">f_vals</a>. It is a <a href="#binary">binary expression</a> that creates and returns a <a href="#predicate">predicate</a> iterator function.
+			</p>
+        <pre>
+var lessThan2 = f_.lessThan(2);
+lessThan2(2);
+=&gt; false
+_.filter([1, 2, 3], f_.lt(2));
+=&gt; [1]
+
+var youngerThan50 = f_.lessThan(f_.get('age'), 50);
+youngerThan50({name : 'moe', age : 40});
+=&gt; true
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+_.filter(stooges, youngerThan50);
+=&gt; [{name : 'moe', age : 40}]
+</pre>
+            <p><a class="function" name="atMost">atMost</a> <code>f_.atMost([f_val_L,] f_val_R) =&gt; predicate(item)</code> <span class="alias">Alias: <b>lte</b></span><br />
+            At most is a less than or equal to test comparing left and right <a href="#fval">f_vals</a>. It is a <a href="#binary">binary expression</a> that creates and returns a <a href="#predicate">predicate</a> iterator function.
+			</p>
+        <pre>
+var atMost2 = f_.atMost(2);
+atMost2(2);
+=&gt; true
+_.filter([1, 2, 3], f_.lte(2));
+=&gt; [1, 2]
+
+var atMost50 = _.atMost(f_.get('age'), 50);
+atMost50({name : 'moe', age : 40});
+=&gt; true 
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+_.filter(stooges, atMost50);
+=&gt; [{name : 'moe', age : 40}, {name : 'larry', age : 50}]
+</pre>
+        
+        <h2><a name="logical">Logical</a></h2>
+        
+            <p><a class="function" name="and">and</a> <code>f_.and([f_val_L,] f_val_R) =&gt; predicate(item)</code><br />
+            Logical 'and' test comparing truthiness of left and right <a href="#fval">f_vals</a>. Returns true if both left and right <a href="#fval">f_vals</a> are true. It is a <a href="#binary">binary expression</a> that creates and returns a <a href="#predicate">predicate</a> iterator function.
+			</p>
+        <pre>
+_.filter([1, 2, 3, 4, 5, 6], f_.and(f_.gt(2), f_.lt(5)));
+=&gt; [3, 4]
+</pre>
+
+            <p><a class="function" name="neither">neither</a> <code>f_.neither([f_val_L,] f_val_R) =&gt; predicate(item)</code><br />
+            Logical 'neither' test comparing truthiness of left and right <a href="#fval">f_vals</a>. Returns true if neither left nor right <a href="#fval">f_vals</a> are true. It is a <a href="#binary">binary expression</a> that creates and returns a <a href="#predicate">predicate</a> iterator function.
+			</p>
+        <pre>
+_.filter([1, 2, 3, 4, 5], f_.neither(f_.eq(3), f_.eq(5)));
+=&gt; [1, 2, 4, 6]
+</pre>
+
+            <p><a class="function" name="or">or</a> <code>f_.or([f_val_L,] f_val_R) =&gt; predicate(item)</code><br />
+            Logical 'or' test comparing truthiness of left and right <a href="#fval">f_vals</a>. Returns true if either left nor right <a href="#fval">f_vals</a> are true. It is a <a href="#binary">binary expression</a> that creates and returns a <a href="#predicate">predicate</a> iterator function.
+			</p>
+        <pre>
+_.filter([1, 2, 3, 4, 5], f_.or(f_.eq(3), f_.eq(5));
+=&gt; [3, 5]
+</pre>
+			</p>
+            <p><a class="function" name="xor">xor</a> <code>f_.xor([f_val_L,] f_val_R) =&gt; predicate(item)</code><br />
+            Logical 'exclusive or' test comparing truthiness of left and right <a href="#fval">f_vals</a>. Returns true if only one of left or right <a href="#fval">f_vals</a> is true and the other is false. It is a <a href="#binary">binary expression</a> that creates and returns a <a href="#predicate">predicate</a> iterator function.
+			</p>
+        <pre>
+_.filter([1, 2, 3, 4, 5], f_.xor(f_.eq(2), f_.lt(4)));
+=&gt; [1, 3]
+</pre>
+            <p><a class="function" name="not">not</a> <code>f_.not([f_val]) =&gt; predicate(item)</code><br />
+            Logical 'not' operator that returns the opposite of the truthiness of its <a href="#fval">f_val</a>. It is a <a href="#binary">unary expression</a> that creates and returns a <a href="#predicate">predicate</a> iterator function.
+			</p>
+        <pre>
+_.filter([1, 2, 3, 4, 5], f_.not(f_.isEqual(3)));
+=&gt; [1, 2, 4, 5]
+</pre>
+
+        <h2><a name="arithmetic">Arithmetic</a></h2>
+        
+            <p><a class="function" name="add">add</a> <code>f_.add([f_val_L,] f_val_R) =&gt; iterator(item)</code><br />
+            Add two numeric <a href="#fval">f_vals</a> with this <a href="#unary">binary expression</a> that creates and returns an iterator.
+			</p>
+        <pre>
+_.map([1, 2, 3], f_.add(2));
+=&gt; [3, 4, 5]
+
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+_.map(stooges, f_.add(f_.get('age'), 2));
+=&gt; [42, 52, 62]
+</pre>
+            <p><a class="function" name="subtract">subtract</a> <code>f_.subtract([f_val_L,] f_val_R) =&gt; iterator(item)</code> <span class="alias">Alias: <b>sub</b></span><br />
+            Subtract the right numeric <a href="#fval">f_val</a> from the left numeric <a href="#fval">f_val</a> with this <a href="#binary">binary expression</a> that creates and returns an iterator.
+			</p>
+        <pre>
+_.map([1, 2, 3], f_.subtract(2));
+=&gt; [-1, 0, 1]
+
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+_.map(stooges, f_.sub(f_.get('age'), 2));
+=&gt; [38, 48, 58]
+</pre>
+            <p><a class="function" name="multiply">multiply</a> <code>f_.multiply([f_val_L,] f_val_R) =&gt; iterator(item)</code> <span class="alias">Alias: <b>mul</b></span><br />
+            Multiply the numeric <a href="#fval">f_vals</a> with this <a href="#binary">binary expression</a> that creates and returns an iterator.
+			</p>
+        <pre>
+_.map([1, 2, 3], f_.multiply(2));
+=&gt; [2, 4, 6]
+
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+_.map(stooges, f_.mul(f_.get('age'), 2));
+=&gt; [80, 100, 120]
+</pre>
+
+            <p><a class="function" name="divide">divide</a> <code>f_.multiply([f_val_L,] f_val_R) =&gt; iterator(item)</code> <span class="alias">Alias: <b>div</b></span><br />
+            Divide the left <a href="#fval">f_val</a> by the right <a href="#fval">f_val</a> with this <a href="#binary">binary expression</a> that creates and returns an iterator.
+			</p>
+        <pre>
+_.map([1, 2, 3], f_.divide(2));
+=&gt; [0.5, 1, 1.5]
+
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+_.map(stooges, f_.div(f_.get('age'), 2));
+=&gt; [20, 25, 30]
+</pre>
+
+            <p><a class="function" name="modulo">modulo</a> <code>f_.modulo([f_val_L,] f_val_R) =&gt; iterator(item)</code> <span class="alias">Alias: <b>mod</b></span><br />
+            The remainder of integer division of the left <a href="#fval">f_val</a> by the right <a href="#fval">f_val</a> with this <a href="#binary">binary expression</a> that creates and returns an iterator.
+			</p>
+        <pre>
+_.map([1, 2, 3, 4], f_.mod(2));
+=&gt; [1, 0, 1, 0]
+
+var evens = _.filter([1, 2, 3, 4], f_.eq(f_.mod(2), 0));
+=&gt; [2, 4]
+</pre>
+            <p><a class="function" name="increment">increment</a> <code>f_.increment([f_val]) =&gt; iterator(item)</code> <span class="alias">Alias: <b>incr</b></span><br />
+            Increment a numeric <a href="#fval">f_val</a> with this <a href="#unary">unary expression</a>.
+			</p>
+        <pre>
+_.map([1, 2, 3, 4], f_.increment());
+=&gt; [2, 3, 4, 5]
+
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+_.map(stooges, f_.incr(f_.get('age')));
+=&gt; [41, 51, 61]
+</pre>
+            <p><a class="function" name="decrement">decrement</a> <code>f_.decrement([f_val]) =&gt; iterator(item)</code> <span class="alias">Alias: <b>decr</b></span><br />
+            Decrement a numeric <a href="#fval">f_val</a> with this <a href="#unary">unary expression</a>.
+			</p>
+        <pre>
+_.map([1, 2, 3, 4], f_.decrement());
+=&gt; [0, 1, 2, 3]
+
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+_.map(stooges, f_.decr(f_.get('age')));
+=&gt; [39, 49, 59]
+</pre>
+            <p><a class="function" name="square">square</a> <code>f_.square([f_val]) =&gt; iterator(item)</code> <span class="alias">Alias: <b>sqr</b></span><br />
+            Square a numeric <a href="#fval">f_val</a> with this <a href="#unary">unary expression</a>.
+			</p>
+        <pre>
+_.map([1, 2, 3, 4], f_.square());
+=&gt; [1, 4, 9, 16]
+
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+_.map(stooges, f_.sqr(f_.get('age')));
+=&gt; [1600, 2500, 3600]
+</pre>
+            <p><a class="function" name="negate">negate</a> <code>f_.negate([f_val]) =&gt; iterator(item)</code> <span class="alias">Alias: <b>neg</b></span><br />
+            Negate a numeric <a href="#fval">f_val</a> with this <a href="#unary">unary expression</a>.
+			</p>
+        <pre>
+_.map([1, 2, 3, 4], f_.negate());
+=&gt; [-1, -2, -3, -4]
+
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+_.map(stooges, f_.neg(f_.get('age')));
+=&gt; [-40, -50, -60]
+</pre>
+        
+        <h2><a name="string-method">String Methods</a></h2>
+        <p><code>f_.<em>stringMethod</em>([f_val_string,] [*f_val_argument]) =&gt; iterator(item|string)</code></p>
+        <p>The f_underscore.js API aliases String's native methods to create simple, concise string manipulation iterators. The first argument to string methods is an optional <a href="#fval">f_val</a> that should return the string the method will be applied to if the iterator is called with a non-string. Subsequent arguments follow the same signature as you would pass to the method itself. String methods include: <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/charAt">charAt</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/charCodeAt">charCodeAt</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/concat">concat</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/fromCharCode">fromCharCode</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/indexOf">indexOf</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/lastIndexOf">lastIndexOf</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/match">match</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/replace">replace</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/search">search</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/slice">slice</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/split">split</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/substr">substr</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/substring">substring</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/toLowerCase">toLowerCase</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/toUpperCase">toUpperCase</a>.
+        </p>
+        <pre>
+var toUpper = f_.toUpperCase();
+toUpper('larry');
+=&gt; LARRY
+
+var nameToUpper = f_.toUpperCase(f_.get('name'));
+nameToUpper({name:'larry'});
+=&gt; LARRY
+
+var splitSpaces = f_.split(' ');
+splitSpaces('larry curly moe');
+=&gt; ['larry', 'curly', 'moe']
+
+var replaceSpacesInName = f_.replace(f_.get('name'), / /g, '');
+replaceSpacesInName({name:'l a r r y'});
+=&gt; larry
+</pre>
+        
+        <h2><a name="array-method">Array Methods</a></h2>
+        <p><code>f_.<em>arrayMethod</em>([f_val_string,] [*f_val_argument]) =&gt; iterator(item|string)</code></p>
+        <p>The f_underscore.js API aliases Array's native methods to create simple, concise array manipulation iterators. The first argument to string methods is an optional <a href="#fval">f_val</a> that should return the string the method will be applied to if the iterator is called with a non-string. Subsequent arguments follow the same signature as you would pass to the method itself. Array methods include: <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/concat">concat</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/indexOf">indexOf</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/join">join</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/lastIndexOf">lastIndexOf</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/pop">pop</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/push">push</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/reverse">reverse</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/shift">shift</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/slice">slice</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/sort">sort</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/splice">splice</a>, <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/unshift">unshift</a>.
+        <pre>
+var joinBySlash = f_.join('/');
+joinBySlash(['a','sample','path']);
+=&gt; 'a/sample/path'
+</pre>
+
+        <h2><a name="utility">Utility Functions</a></h2>
+        
+            <p><a class="function" name="functionize">functionize</a> <code>f_.functionize(value) =&gt; iterator(item) =&gt; value</code><br />
+            If <b>value</b> is not a function, create and return an iterator that returns <b>value</b> when called, else return the <b>value</b> function.
+			</p>
+        <pre>
+var aStringFn = f_.functionize('aString');
+aStringFn();
+=&gt; 'aString'
+var anotherStringFn = f_.functionize(aStringFn);
+anotherStringFn();
+=&gt; 'aString'
+aStringFn === anotherStringFn
+=&gt; true
+</pre>
+            <p><a class="function" name="partial">partial</a> <code>f_.partial(function, [*arguments])</code><br />
+            Partial application of <b>function</b> that creates and returns a new function that calls <b>function</b> with the given <b>arguments</b> prefilled. Like underscore.js's <a href="http://underscorejs.org">bind</a>, except does not specify context.
+			</p>
+            <pre>
+var logMessage = function(label, message) {
+    console.log(label + ": " + message);
+}
+logMessage("Warning", "Example message.");
+=&gt; "Warning: Example message."
+
+var logWarning = f_.partial(logMessage, "Warning");
+logWarning("Another example message.");
+=&gt; "Warning: Another example message."
+</pre>
+
+            <p><a class="function" name="thread">thread</a> <code>f_.thread(*functions|functionArray) =&gt; iterator(item)</code><br />
+            Given many <b>functions</b> provided as arguments, or a single array of <b>functions</b>, returns an iterator that will call each function in succession. The first function will be called with <b>item</b>. Each function thereafter will be called with the return value of the previous function called. The <b>thread</b> function is similar to <a href="http://underscorejs.org">_.compose</a> except that thread calls <b>functions</b> in the same order they are passed. The <a href="#chaining">chaining</a> functionality in f_underscore.js relies on threading.
+			</p>
+            <pre>
+var canWithdraw20Dollars = f_.thread(
+                f_.get('balance'),
+                f_.subtract(20),
+                f_.greaterThan(0)
+             );
+canWithdraw20Dollars({name: 'moe', balance: 15});
+=&gt; false
+canWithdraw20Dollars({name: 'curly', balance: 25});
+=&gt; true
+</pre>
+            <p><a class="function" name="zipObject">zipObject</a> <code>f_.zipObject(keysArray,valuesArray) =&gt; object</code><br />
+            Given two arrays of same length, one with strings/keys, the other with values, 
+            return an object comprised of the keys and values.
+			</p>
+            <pre>
+f_.zipObject(['a','b'], [1, 2]);
+=&gt; {a : 1, b : 2}
+</pre>
+
+        <h2><a name="chaining">Chaining</a></h2>
+        <p><code>f_([propertyName])<em>.function().function()...</em> =&gt; iterator(item)</code></p>
+        <p>The chaining API provides a concise, readable means for constructing iterator functions. Chaining begins by calling <b>f_</b> as a function. If the optional <b>propertyName</b> is provided, the first chained call is <b>get(propertyName)</b>. Calls can be chained to any f_underscore function thereafter. The chained iterators are queued onto an array. When the resulting <b>iterator</b> is called with an <b>item</b> the first chained iterator is called with <b>item</b>. Each chained iterator thereafter is called with the return value of the previous one. Chaining provides a fluent interface around the <a href="#thread">f_.thread</a> function.</p>
+            <pre>
+var canWithdraw20Dollars = f_().get('balance').subtract(20).greaterThan(0);
+
+canWithdraw20Dollars({name: 'moe', balance: 15});
+=&gt; false
+canWithdraw20Dollars({name: 'curly', balance: 25});
+=&gt; true
+
+var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+_.filter(stooges, f_('age').gt(40));
+=&gt; [{name : 'larry', age : 50}, {name : 'curly', age : 60}]
+</pre>
+        <h2><a name="changelog">Changelog</a></h2>
+        <p><a class="function" name="v0.1.0">v0.1.0 - 2/28/2012</a><br />
+        Initial release of f_underscore.js.
+        </p>
+    </div>
+    <script type="text/javascript" src="test/vendor/underscore.js"></script>
+    <script type="text/javascript" src="f_underscore.js"></script>
+    </body>
+</html>
