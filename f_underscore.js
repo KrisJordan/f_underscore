@@ -1,4 +1,4 @@
-//      f_underscore.js 0.1.0
+//      f_underscore.js 0.2.0
 //      (c) 2012 Kris Jordan
 //      `f_underscore` is freely distributable under the MIT license.
 //      Documentation and details at:
@@ -27,7 +27,7 @@
     }
 
     // Current version.
-    f_.VERSION = '0.1.0';
+    f_.VERSION = '0.2.0';
 
     // Given two arrays of same length, one with strings/keys, the other with values, 
     // return an object comprised of the keys and values.

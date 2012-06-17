@@ -450,6 +450,14 @@ _.filter([1, 2, 3, 4, 5], f_.not(f_.isEqual(3)));
 =&gt; [1, 2, 4, 5]
 </pre>
 
+            <p><a class="function" name="ternary">ternary</a> <code>f_.ternary([f_val], f_val_true, f_val_false) =&gt; predicate(item)</code><br />
+            Logical 'tertiary' operator that evaluetes the truthiness of its <a href="#fval">f_val</a>. It is a <a href="#binary">unary expression</a> returns <code>f_val_true</code> if true, or <code>f_val_false</code> if false.
+			</p>
+        <pre>
+_.map([1, 2, 3, 4, 5], f_.ternary(f_.modulo(2), 'odd', 'even'));
+=&gt; ['odd', 'even', 'odd', 'even', 'odd']
+</pre>
+
         <h2><a name="arithmetic">Arithmetic</a></h2>
         
             <p><a class="function" name="add">add</a> <code>f_.add([f_val_L,] f_val_R) =&gt; iterator(item)</code><br />
