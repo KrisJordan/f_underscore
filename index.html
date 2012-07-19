@@ -129,6 +129,8 @@
             <a class="title" href="#chaining">Chaining</a>
             <a class="title" href="#changelog">Changelog</a>
             <ul>
+                <li> - <a href="#v0.2.1">0.2.1 - 7/19/2012</a></li>
+                <li> - <a href="#v0.2.0">0.2.0 - 6/16/2012</a></li>
                 <li> - <a href="#v0.1.0">0.1.0 - 2/28/2012</a></li>
             </ul>
             <p><br /></p><!-- hack due to css laziness -->
@@ -142,8 +144,8 @@
         <h2>Download</h2>
         <p>
         <table>
-            <tr><td><a href="f_underscore.js">Development Version (0.2.0)</a></td><td><em>&nbsp;12kb, Uncompressed with Comments</em></td></tr>
-            <tr><td><a href="f_underscore-min.js">Production Version (0.2.0)</a></td><td><em>&lt;1.5kb, Minified and Gzipped</em></td></tr>
+            <tr><td><a href="f_underscore.js">Development Version (0.2.1)</a></td><td><em>&nbsp;12kb, Uncompressed with Comments</em></td></tr>
+            <tr><td><a href="f_underscore-min.js">Production Version (0.2.1)</a></td><td><em>&lt;1.5kb, Minified and Gzipped</em></td></tr>
             <tr><td><a href="f_underscore-bundle-min.js">Production w/ Underscore 1.3.3</a></td><td><em>&lt;5kb, Minified and Gzipped</em></td></tr>
         </table>
         <small>(Note: Depends on <a href="http://underscorejs.org">underscore.js</a>)</small>
@@ -661,13 +663,19 @@ _.filter(stooges, f_('age').gt(40));
 =&gt; [{name:'larry', age:50}, {name:'curly', age:60}]
 </pre>
         <h2><a name="changelog">Changelog</a></h2>
+        <p><a class="function" name="v0.2.1">v0.2.1 - 7/19/2012</a><br />
+        <ul>
+            <li>Fix global namespace leakage issue.</li>
+        </ul>
         <p><a class="function" name="v0.2.0">v0.2.0 - 6/16/2012</a><br />
         <ul>
             <li>Added <a href="#ternary">ternary</a> operator.</li>
             <li>Bumped bundled underscore.js version to 1.3.3.</li>
-        </p>
+        </ul>
         <p><a class="function" name="v0.1.0">v0.1.0 - 2/28/2012</a><br />
-        Initial release of f_underscore.js.
+        <ul>
+            <li>Initial release of f_underscore.js</li>
+        </ul>
         </p>
     </div>
     <script type="text/javascript" src="test/vendor/underscore.js"></script>
