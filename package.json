@@ -2,7 +2,7 @@
   "author": "Kris Jordan <krisjordan@gmail.com> (http://krisjordan.com)",
   "name": "f_underscore",
   "description": "Iterator function fibrary for Underscore.js",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "repository": {
     "type": "git",
     "url": "git://github.com/KrisJordan/f_underscore.git"
