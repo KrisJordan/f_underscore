@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/KrisJordan/f_underscore.png)](http://travis-ci.org/KrisJordan/f_underscore)
 # f_
 
 f_underscore.js is a library of functions that create and compose iterator functions. It is designed to be used in conjunction with [underscore.js](http://underscorejs.org)'s functions that employ iterators, functions like filter and map. With the f_underscore.js library you can wield and weld iterator functions declaratively and dynamically. It's the tie clip to go along with underscore.js's tie.
