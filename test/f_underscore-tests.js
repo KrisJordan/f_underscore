@@ -34,7 +34,7 @@ $(document).ready(function() {
         equals(f_.partial(add, 1)(2), 3);
         equals(f_.partial(add, 1, 2)(), 3);
     });
-    
+
     test("f_.thread", function() {
         equals(f_.thread(f1)(), 1);
         equals(f_.thread(f1, i)(), 1);
@@ -44,7 +44,7 @@ $(document).ready(function() {
 
     test("f_.zipObject", function() {
         deepEqual(f_.zipObject(keys, vals), o);
-        deepEqual(f_.zipObject([], []), {}); 
+        deepEqual(f_.zipObject([], []), {});
     });
 
     test("f_.functionize values", function() {
@@ -106,7 +106,7 @@ $(document).ready(function() {
         deepEqual(f_.split(",")("a,b"), ["a","b"]);
     });
 
-    
+
     // Unary Tests
 
     test("f_.increment", function() {
@@ -338,4 +338,19 @@ $(document).ready(function() {
         equals(f_('a').add(1).mul(2).gt(5)(o), false);
     });
 
+    test("f_.identity", function() {
+        _.each(["foo", "bar"], function(value) {
+            equals(f_.identity(value)(), value);
+        });
+    });
+
+    test("f_.where", function() {
+        var where = f_.where({name: "moe", age: 40});
+
+        equals(where({name: "moe", age: 40}), true);
+        equals(where({name: "moe", age: 40, hobbies: ["felonious assault"]}), true);
+        equals(where({name: "curly", age: 40}), false);
+        equals(where({name: "moe", age: 41}), false);
+        equals(f_.where()({}), false); // always false when attrs not provided
+    });
 });

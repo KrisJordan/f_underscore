@@ -136,7 +136,7 @@
     // new object with only the specified `properties`.
     f_.project = function(properties) {
         return function(obj) {
-            return f_.zipObject(properties, 
+            return f_.zipObject(properties,
                                 _.map(properties, f_.getByProperty(obj)));
         };
     };
@@ -225,7 +225,7 @@
 
 
     // ### Primitives
-    var 
+    var
 
     // Arithmetic Primitives
     add         = function(l, r)        { return l + r; },
@@ -291,12 +291,13 @@
     // Relational
     f_.eq           = f_.isEqual        = f_.partial(f_.binaryExpr, equality);
     f_.neq          = f_.isNotEqual     = f_.partial(f_.binaryExpr, inequality);
+    f_.identity                         = f_.partial(f_.unaryExpr, _.identity);
 
     f_.gt           = f_.greaterThan    = f_.partial(f_.binaryExpr, greaterThan);
     f_.gte          = f_.atLeast        = f_.partial(f_.binaryExpr, atLeast);
     f_.lt           = f_.lessThan       = f_.partial(f_.binaryExpr, lessThan);
     f_.lte          = f_.atMost         = f_.partial(f_.binaryExpr, atMost);
-        
+
     f_.greaterOf                        = f_.partial(f_.binaryExpr, greaterOf);
     f_.lesserOf                         = f_.partial(f_.binaryExpr, lesserOf);
 
@@ -306,11 +307,24 @@
     f_.or                               = f_.partial(f_.binaryExpr, or);
     f_.xor                              = f_.partial(f_.binaryExpr, xor);
 
+    // Returns a function that will return true when evaluated against an object if the object's properties match
+    // all of the properties included in the argument.  This is essentially the predicate version of _.where except
+    // that f_.where does a deep equality test (using _.isEqual).
+    f_.where = function(attrs) {
+        // to be consistent with _.where, if the argument is empty the predicate always returns false
+        return _.isEmpty(attrs) ? f_.identity(false) : function(value) {
+            return _.all(attrs, function(attrValue, key) {
+                // underscore uses simple equality for this
+                return _.isEqual(attrValue , value[key]);
+            });
+        };
+    };
+
     // Ternary
     f_.ternary                          = f_.partial(f_.ternaryExpr, ternary);
 
     // ### String/Array Method Iterators
-    var methods = [ 
+    var methods = [
                         // Array
                         'pop',
                         'push',
@@ -342,8 +356,8 @@
                     ];
     _.extend(f_, f_.zipObject(
                     methods,
-                    _.map(methods, function(fn) { 
-                        return f_.partial(f_.methodExpr, fn); 
+                    _.map(methods, function(fn) {
+                        return f_.partial(f_.methodExpr, fn);
                     })
                  )
             );
